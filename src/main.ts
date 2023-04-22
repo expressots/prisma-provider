@@ -1,4 +1,4 @@
 import "reflect-metadata";
-import { generatePrismaModels } from "./providers/generator/gen.provider";
+import { generatePrismaModels } from "./prisma/generator";
 
 generatePrismaModels();

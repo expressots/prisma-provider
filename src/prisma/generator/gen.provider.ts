@@ -1,7 +1,9 @@
-import { PrismaFieldOptions, PrismaFieldMapping } from "../decorators/prisma/prisma-decorator.provider";
 import fs from "fs";
 import path from "path";
 import glob from "glob";
+import { PrismaFieldOptions } from "../decorators";
+
+const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
 function generatePrismaModel(cls: any): void {
 
@@ -50,7 +52,7 @@ function generatePrismaModel(cls: any): void {
 
   const modelString = `model ${className} {\n  ${fieldStrings.join("\n  ")}\n}`;
 
-  const schemaPath = path.join(__dirname, "..", "/orm", "prisma", "schema.prisma");
+  const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
   const schemaContent = fs.readFileSync(schemaPath, "utf-8");
 
   const modelRegex = new RegExp(`model ${className} {[^}]*}`, "g");
@@ -69,7 +71,8 @@ function generatePrismaModel(cls: any): void {
 }
 
 async function generatePrismaModels(): Promise<void> {
-  const entitiesPath = path.join(__dirname, "..", "..", "/entities");
+  const entitiesPath = path.join(PROJECT_ROOT, "demo", "/entities");
+  console.log("entitiesPath", entitiesPath);
 
   const files = glob.sync(`${entitiesPath}/**/*.entity.ts`);
   if (!files) {

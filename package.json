@@ -1,17 +1,66 @@
 {
-  "name": "decorator-prisma",
+  "name": "@expressots/prisma",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Prisma provider for Expresso TS",
+  "author": "Richard Zampieri",
+  "keywords": [
+    "expressots",
+    "nodejs",
+    "orm",
+    "typescript",
+    "prisma",
+    "provider",
+    "sql",
+    "nosql"
+  ],
+  "main": "./lib/cjs/index.js",
+  "types": "./lib/cjs/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/esm/types/index.d.ts",
+        "default": "./lib/esm/index.mjs"
+      },
+      "require": {
+        "types": "./lib/cjs/types/index.d.ts",
+        "default": "./lib/cjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "license": "MIT",
+  "homepage": "https://expresso-ts.com",
+  "funding": {
+    "type": "",
+    "url": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expressots/prisma-provider"
+  },
+  "bugs": {
+    "url": "https://github.com/expressots/prisma-provider/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.10.0"
+  },
   "scripts": {
+    "clean": "rm -rf lib",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc -p tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
     "dev": "tsnd --respawn src/main.ts",
-    "prisma:model": "node ./src/providers/generator/gen.provider.js",
+    "dry:run": "npm publish --dry-run",
+    "publish": "npm publish --access public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
+    "@types/glob": "^8.1.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.4"
   },
@@ -21,6 +70,6 @@
     "reflect-metadata": "^0.1.13"
   },
   "prisma": {
-    "schema": "./src/providers/orm/prisma/schema.prisma"
+    "schema": "./src/demo/orm/prisma/schema.prisma"
   }
 }

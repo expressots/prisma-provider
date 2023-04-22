@@ -1,4 +1,4 @@
-import { PrismaDefault, PrismaField } from "../providers/decorators/prisma/prisma-decorator.provider";
+import { PrismaDefault, PrismaField } from "../../prisma/decorators";
 import Post from "./post.entity";
 
 class User {

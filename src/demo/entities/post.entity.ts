@@ -1,4 +1,5 @@
-import { PrismaField, PrismaFieldMapping, PrismaType } from "../providers/decorators/prisma/prisma-decorator.provider";
+
+import { PrismaField, PrismaType } from "../../prisma/decorators";
 import User from "./user.entity";
 
 class Post {
