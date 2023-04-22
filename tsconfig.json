@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2016",                                  
+    "experimentalDecorators": true,                   
+    "emitDecoratorMetadata": true,                    
+    "module": "commonjs",                             
+    "rootDir": "./src",                               
+    "moduleResolution": "node",                       
+    "allowJs": true,                                  
+    "checkJs": true,                                  
+    "declaration": true,                              
+    "outDir": "./dist",                                  
+    "esModuleInterop": true,                             
+    "forceConsistentCasingInFileNames": true,            
+    "strict": true,                                      
+    "skipLibCheck": true,
+    "noImplicitAny": false                                 
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts", "test/**/*"]
+}

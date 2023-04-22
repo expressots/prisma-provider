@@ -1,0 +1,26 @@
+{
+  "name": "decorator-prisma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsnd --respawn src/main.ts",
+    "prisma:model": "node ./src/providers/generator/gen.provider.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.13.0",
+    "prisma": "^4.13.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "prisma": {
+    "schema": "./src/providers/orm/prisma/schema.prisma"
+  }
+}
