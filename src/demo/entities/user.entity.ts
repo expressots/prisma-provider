@@ -1,25 +1,24 @@
-import { PrismaDefault, PrismaField } from "../../prisma/decorators";
+import { PrismaDefault, PrismaField, PrismaInput, PrismaRelation, PrismaType } from "../../prisma/decorators";
 import Post from "./post.entity";
 
+@PrismaInput
 class User {
-    @PrismaField({ type: "Int", isId: true, isOptional: false, isUnique: true, prismaDefault: PrismaDefault.Autoincrement })
-    id: number;
-  
-    @PrismaField({ type: "String", isOptional: true })
-    name?: string;
-  
-    @PrismaField({ type: "Int", isOptional: false })
-    age: number;
+  @PrismaField({ isId: true, isUnique: true, prismaDefault: PrismaDefault.Autoincrement })
+  id!: number;
 
-    // Use the decorator for the relation field as well
-    @PrismaField({ type: "Post[]" })
-    posts?: Post[];
-  
-    constructor(id: number, name: string, age: number) {
-      this.id = id;
-      this.name = name;
-      this.age = age;
-    }
+  @PrismaField()
+  name?: string | null;
+
+  @PrismaField()
+  age!: number;
+
+  // @PrismaField({ type: "Post[]" })
+  // posts?: Post[];
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
 }
-  
-  export default User;
+
+export default User;

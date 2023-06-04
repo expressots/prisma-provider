@@ -1,7 +1,8 @@
 
-import { PrismaField, PrismaType } from "../../prisma/decorators";
+import { PrismaField, PrismaInput, PrismaType } from "../../prisma/decorators";
 import User from "./user.entity";
 
+@PrismaInput
 class Post {
     @PrismaField({ type: "Int", isId: true })
     id: number;

@@ -27,9 +27,9 @@ model Post {
 	authorId Int
 }
 
-
-
-
-
-
-
+model Player {
+  id Int @id
+  title String
+  content String
+	authorId Int
+}
