@@ -14,9 +14,14 @@ datasource db {
 
 model User {
   id Int @id @unique @default(autoincrement())
-  name String?
-  age Int
+  name String
+  age String
   posts Post[]
+}
+
+model Product {
+  id Int @id @unique
+  name Int @db.Oid
 }
 
 model Post {
@@ -27,9 +32,7 @@ model Post {
 	authorId Int
 }
 
-model Player {
-  id Int @id
-  title String
-  content String
-	authorId Int
+model Address {
+  id String @id
 }
+

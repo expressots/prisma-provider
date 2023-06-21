@@ -4,6 +4,8 @@ import { generatePrismaModels, removePrismaModels } from "./prisma/generator";
 
 import { PrismaClient } from '@prisma/client'
 import User from "./demo/entities/user.entity";
+import { ScalarTypeAttributesMap, StringAttributesPostgres } from "./prisma/types/native-type-attributes/postgres-attr";
+import { ScalarType } from "./prisma/types/scalar-types";
 
 // const prisma = new PrismaClient()
 
@@ -29,5 +31,8 @@ import User from "./demo/entities/user.entity";
 //     process.exit(1)
 //   })
 
-// generatePrismaModels();
-removePrismaModels();
+//generatePrismaModels();
+//removePrismaModels();
+
+const attribute = ScalarTypeAttributesMap(ScalarType.String, StringAttributesPostgres.Xml);
+console.log(attribute.toString());

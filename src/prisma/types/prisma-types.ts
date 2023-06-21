@@ -1,3 +1,5 @@
+import { ScalarType } from "./scalar-types";
+
 export const enum Remarks {
   Unique = "@unique",
   CompositeUnique = "@@unique",
@@ -5,23 +7,14 @@ export const enum Remarks {
   CompositeId = "@@id",
 }
 
-export enum PrismaFieldScalarType {
-  String = "String",
-  Boolean = "Boolean",
-  Int = "Int",
-  BigInt = "BigInt",
-  Float = "Float",
-  Decimal = "Decimal",
-  DateTime = "DateTime",
-  Json = "Json",
-  Bytes = "Bytes",
-  UUID = "String",
-}
+
+
+
 
 type FieldModifierOptions = "[]" | "?";
 interface FieldModifier {
   name: string;
-  type: PrismaFieldScalarType;
+  type: ScalarType;
   modifiers?: FieldModifierOptions;
 }
 
