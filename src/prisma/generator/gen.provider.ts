@@ -59,18 +59,22 @@ function generatePrismaModel(cls: any): void {
 
   const className = cls.name;
   const fields = (Reflect.getMetadata("prisma:fields", cls) as PrismaFieldOptions[]) || [];
+  
+  console.log("->", fields);
 
   const fieldStrings = fields.map((field) => {
-    const { name, type, isId, isOptional, isUnique, default: defaultValue, prismaDefault, relation, map, db } = field;
+    const { name, type, isId, isOptional, isUnique, prismaDefault, map, db } = field;
 
     let fieldString = `${name} ${type}`;
 
-    if (isId) {
-      fieldString += " @id";
+    if (isOptional == true) {
+      fieldString += "?";
+    } else {
+      fieldString += "";
     }
 
-    if (isOptional) {
-      fieldString += "?";
+    if (isId) {
+      fieldString += " @id";
     }
 
     if (isUnique) {
@@ -79,14 +83,6 @@ function generatePrismaModel(cls: any): void {
 
     if (prismaDefault) {
       fieldString += ` @default(${prismaDefault}())`;
-    } else if (defaultValue !== undefined) {
-      fieldString += ` @default(${JSON.stringify(defaultValue)})`;
-    }
-
-    if (relation) {
-      const { fields: refFields, references: refReferences, referenceType: refForeign } = relation;
-      fieldString += ` @relation(fields: [${refFields}], references: [${refReferences}])`;
-      fieldString += `\n\t${refFields} ${refForeign}`;
     }
 
     if (map) {

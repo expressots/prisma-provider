@@ -1,56 +1,41 @@
 import "reflect-metadata";
 import { plainToClass } from 'class-transformer';
+import { ScalarType } from "../types/scalar-types";
 
-export type PrismaFieldType = "String" | "Int" | "Boolean" | "DateTime" | "Json" | string;
 export enum PrismaDefault {
-  Autoincrement = "autoincrement",
+  AutoIncrement = "autoincrement",
   Now = "now",
   Cuid = "cuid",
   Uuid = "uuid",
 }
 
 export type PrismaFieldTypeMap = {
-  [key in PrismaFieldType]: string;
+  [key in ScalarType]: string;
 };
 
 export const PrismaFieldMapping: PrismaFieldTypeMap = {
   String: "String",
   Int: "Int",
+  BigInt: "BigInt",
+  Float: "Float",
   Boolean: "Boolean",
   DateTime: "DateTime",
   Json: "Json",
-  UUID: "String",
   Bytes: "Bytes",
   Decimal: "Decimal",
 };
 
-export enum PrismaType {
-  String = "String",
-  Int = "Int",
-  Boolean = "Boolean",
-  DateTime = "DateTime",
-  Json = "Json",
-  UUID = "String",
-  Bytes = "Bytes",
-  Decimal = "Decimal",
-}
-
 export interface PrismaFieldOptions<T = any> {
-  name?: string;
-  type?: PrismaFieldType;
-  isId?: boolean;
+  type?: ScalarType;
+  attr?: string;
+  isId?: boolean; // @id if there is more than one isId, @@id([id1, id2])
   isOptional?: boolean;
   isUnique?: boolean;
-  default?: any;
   prismaDefault?: PrismaDefault;
-  relation?: {
-    fields: string[];
-    references: Array<string>;
-    referenceType: PrismaType;
-  };
   map?: string;
   db?: string;
   transform?: (value: T) => any;
+  name?: string;
 }
 
 export function PrismaField<T = any>(options: PrismaFieldOptions<T> = {}): PropertyDecorator {
@@ -60,36 +45,24 @@ export function PrismaField<T = any>(options: PrismaFieldOptions<T> = {}): Prope
     }
 
     const fields = Reflect.getMetadata("prisma:fields", target.constructor) as PrismaFieldOptions[];
-    fields.push({ ...options, name: propertyKey.toString(), isOptional: options.type ? options.type.endsWith(' | null') : true });
+    const field: PrismaFieldOptions = { 
+      name : options.name || propertyKey.toString(),
+      type: options.type || ScalarType.String,
+      attr: options.attr || PrismaFieldMapping[options.type || ScalarType.String],
+      isId: options.isId || false,
+      prismaDefault: options.prismaDefault || undefined,
+      isOptional: options.isOptional || false,
+      isUnique: options.isUnique || false,
+      map: options.map || undefined,
+      db: options.db || undefined,
+      transform: options.transform || undefined,
+    }
+
+
+    fields.push(field);
     Reflect.defineMetadata("prisma:fields", fields, target.constructor);
   };
 }
 
-export function PrismaInput<T extends { new (...args: any[]): {} }>(constructor: T) {
-  return class extends constructor {
-    constructor(...args: any[]) {
-      super(...args);
-      return plainToClass(constructor, this);
-    }
-  };
-}
+//, isOptional: options.type ? options.type.endsWith(' | null') : true 
 
-export interface PrismaRelationOptions {
-  relation?: {
-    fields: string[];
-    references: string[];
-    referenceType: PrismaType;
-  };
-}
-
-export function PrismaRelation(options: PrismaRelationOptions): PropertyDecorator {
-  return function (target: Object, propertyKey: string | symbol) {
-    if (!Reflect.hasMetadata("prisma:relations", target.constructor)) {
-      Reflect.defineMetadata("prisma:relations", [], target.constructor);
-    }
-
-    const relations = Reflect.getMetadata("prisma:relations", target.constructor) as PrismaRelationOptions[];
-    relations.push({ ...options });
-    Reflect.defineMetadata("prisma:relations", relations, target.constructor);
-  };
-}

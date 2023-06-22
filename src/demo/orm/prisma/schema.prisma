@@ -13,26 +13,5 @@ datasource db {
 // [Models]
 
 model User {
-  id Int @id @unique @default(autoincrement())
-  name String
-  age String
-  posts Post[]
+  id DateTime @id @unique @default(now())
 }
-
-model Product {
-  id Int @id @unique
-  name Int @db.Oid
-}
-
-model Post {
-  id Int @id
-  title String
-  content String
-  author User @relation(fields: [authorId], references: [id])
-	authorId Int
-}
-
-model Address {
-  id String @id
-}
-

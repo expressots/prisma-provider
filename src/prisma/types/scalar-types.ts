@@ -7,8 +7,7 @@ enum ScalarType {
     Decimal = "Decimal",
     DateTime = "DateTime",
     Json = "Json",
-    Bytes = "Bytes",
-    UUID = "String",
+    Bytes = "Bytes"   
 }
 
 export { ScalarType }
