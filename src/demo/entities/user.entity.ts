@@ -1,5 +1,5 @@
 import { PrismaDefault, PrismaField } from "../../prisma/decorators";
-import { ScalarType } from "../../prisma/types/scalar-types";
+import { ScalarType } from "../../prisma/types/scalar.types";
 
 class User {
   @PrismaField({ isId: true, isUnique: true, type: ScalarType.DateTime, prismaDefault: PrismaDefault.Now })

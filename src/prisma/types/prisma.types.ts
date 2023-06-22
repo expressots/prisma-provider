@@ -1,4 +1,4 @@
-import { ScalarType } from "./scalar-types";
+import { ScalarType } from "./scalar.types";
 
 export const enum Remarks {
   Unique = "@unique",

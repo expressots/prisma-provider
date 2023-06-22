@@ -1,6 +1,5 @@
 import "reflect-metadata";
-import { plainToClass } from 'class-transformer';
-import { ScalarType } from "../types/scalar-types";
+import { ScalarType } from "../types/scalar.types";
 
 export enum PrismaDefault {
   AutoIncrement = "autoincrement",
@@ -9,11 +8,11 @@ export enum PrismaDefault {
   Uuid = "uuid",
 }
 
-export type PrismaFieldTypeMap = {
+type PrismaFieldTypeMap = {
   [key in ScalarType]: string;
 };
 
-export const PrismaFieldMapping: PrismaFieldTypeMap = {
+const PrismaFieldMapping: PrismaFieldTypeMap = {
   String: "String",
   Int: "Int",
   BigInt: "BigInt",
@@ -58,11 +57,8 @@ export function PrismaField<T = any>(options: PrismaFieldOptions<T> = {}): Prope
       transform: options.transform || undefined,
     }
 
-
     fields.push(field);
     Reflect.defineMetadata("prisma:fields", fields, target.constructor);
   };
 }
-
-//, isOptional: options.type ? options.type.endsWith(' | null') : true 
 

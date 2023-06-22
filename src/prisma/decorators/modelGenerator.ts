@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { PrismaFieldOptions } from "../decorators";
+import { PrismaFieldOptions } from ".";
 
 const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
@@ -116,7 +116,7 @@ function generatePrismaModel(cls: any): void {
   fs.writeFileSync(schemaPath, updatedContent);
 }
 
-async function generatePrismaModels(): Promise<void> {
+async function readAllEntities(): Promise<void> {
   const entitiesPath = path.join(PROJECT_ROOT, "demo", "/entities");
   console.log("entitiesPath", entitiesPath);
 
@@ -147,5 +147,8 @@ async function generatePrismaModels(): Promise<void> {
   }
 }
 
+function codeFirstGen(): void {
+    readAllEntities();
+}
 
-export { generatePrismaModels,  removePrismaModels};
+export { codeFirstGen, removePrismaModels};

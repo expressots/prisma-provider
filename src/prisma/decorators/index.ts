@@ -1,1 +1,2 @@
-export * from "./prisma-decorator.provider";
+export * from "./prismaField.decorator";
+export * from "./modelGenerator";

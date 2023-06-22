@@ -1,4 +1,4 @@
-enum ScalarType {
+const enum ScalarType {
     String = "String",
     Boolean = "Boolean",
     Int = "Int",

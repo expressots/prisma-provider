@@ -1,1 +1,2 @@
-export * from "./prisma-types";
+export * from "./prisma.types";
+export * from "./scalar.types";
