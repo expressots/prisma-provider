@@ -60,7 +60,9 @@ function generatePrismaModel(cls: any): void {
   const className = cls.name;
   const fields = (Reflect.getMetadata("prisma:fields", cls) as PrismaFieldOptions[]) || [];
   
-  console.log("->", fields);
+  console.log(fields);
+
+  const idFields: string[] = [];
 
   const fieldStrings = fields.map((field) => {
     const { name, type, isId, isOptional, isUnique, prismaDefault, map, db } = field;
@@ -74,8 +76,13 @@ function generatePrismaModel(cls: any): void {
     }
 
     if (isId) {
-      fieldString += " @id";
+      idFields.push(name!);
+      //fieldString += " @id";
     }
+
+    /* if (isId && idFields.length === 1) {
+      fieldString += " @id";
+    } */
 
     if (isUnique) {
       fieldString += " @unique";
@@ -111,6 +118,17 @@ function generatePrismaModel(cls: any): void {
   } else {
     // Add the new model after the [Models] comment
     updatedContent = schemaContent.replace("// [Models]", `// [Models]\n\n${modelString}`);
+  }
+
+  // Join the idFields with comma separation and add them as a new fieldString if there's more than one id field
+  if (idFields.length > 1) {
+    const idFieldsString = `@@id([${idFields.join(", ")}])`;
+    updatedContent = updatedContent.replace(`model ${className} {`, `model ${className} {\n  ${idFieldsString}`);
+  } else if (idFields.length === 1) {
+    updatedContent = updatedContent.replace(
+      new RegExp(`(${idFields[0]} [A-Za-z]*)`),
+      `$1 @id`
+    )
   }
 
   fs.writeFileSync(schemaPath, updatedContent);

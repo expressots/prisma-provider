@@ -5,6 +5,9 @@ class User {
   @PrismaField({ isId: true, isUnique: true, type: ScalarType.DateTime, prismaDefault: PrismaDefault.Now })
   id!: number;
 
+  @PrismaField({ isId: true, type: ScalarType.String, isUnique: true })
+  email!: string;
+
   constructor(name: string, age: number) {
   }
 }

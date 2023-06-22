@@ -13,6 +13,8 @@ datasource db {
 // [Models]
 
 model User {
-  id DateTime @id @unique @default(now())
+  @@id([id, email])
+  id DateTime @unique @default(now())
+  email String @unique
 }
 
