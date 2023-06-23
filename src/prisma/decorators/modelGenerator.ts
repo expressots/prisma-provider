@@ -58,8 +58,8 @@ async function removePrismaModels(): Promise<void> {
 
 function generatePrismaModel(cls: any): void {
 
-  const model = (Reflect.getMetadata("prisma:model", cls) as PrismaModelOptions) || {};
-  
+  const model = (Reflect.getMetadata("prisma:model", cls) as PrismaModelOptions) || false;
+
   if (model) {
     const className = cls.name;
     const fields = (Reflect.getMetadata("prisma:fields", cls) as PrismaFieldOptions[]) || [];
@@ -153,7 +153,20 @@ function generatePrismaModel(cls: any): void {
 
     fs.writeFileSync(schemaPath, updatedContent);
   } else {
-    console.error(`Could not find Prisma model options for ${cls.name}`);
+    const className = cls.name;
+    const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
+    const schemaContent = fs.readFileSync(schemaPath, "utf-8");
+
+    const modelRegex = new RegExp(`model ${className} {[^}]*}`, "g");
+    const modelExists = modelRegex.test(schemaContent);
+
+    let updatedContent;
+    if (modelExists) { 
+      // TODO: this replace not remove empty line on schema.prisma
+      // Need to fix this later for remove empty lines on schema.prisma
+      updatedContent = schemaContent.replace(modelRegex, '');
+      fs.writeFileSync(schemaPath, updatedContent);
+    }
   }
   
 }
