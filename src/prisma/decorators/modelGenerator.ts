@@ -145,10 +145,16 @@ function generatePrismaModel(cls: any): void {
     }
 
     // Add @@map model annotation
-    console.log(model.map);
     if (model.map) {
       const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
       updatedContent = updatedContent.replace(modelRegex, `$1\n  @@map("${model.map}")\n`);
+    }
+
+    // Add @@index model annotation
+    if (model.index) {
+      const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
+      const indexString = model.index.join(', ');
+      updatedContent = updatedContent.replace(modelRegex, `$1\n  @@index([${indexString}])\n`);
     }
 
     fs.writeFileSync(schemaPath, updatedContent);
