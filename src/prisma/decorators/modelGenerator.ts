@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import glob from "glob";
 import { PrismaFieldOptions } from ".";
+import { PrismaModelOptions } from "./prismaModel.decorator";
 
 const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
@@ -57,81 +58,104 @@ async function removePrismaModels(): Promise<void> {
 
 function generatePrismaModel(cls: any): void {
 
-  const className = cls.name;
-  const fields = (Reflect.getMetadata("prisma:fields", cls) as PrismaFieldOptions[]) || [];
+  const model = (Reflect.getMetadata("prisma:model", cls) as PrismaModelOptions) || {};
   
-  console.log(fields);
+  if (model) {
+    const className = cls.name;
+    const fields = (Reflect.getMetadata("prisma:fields", cls) as PrismaFieldOptions[]) || [];
 
-  const idFields: string[] = [];
+    console.log(fields);
 
-  const fieldStrings = fields.map((field) => {
-    const { name, type, isId, isOptional, isUnique, prismaDefault, map, db } = field;
+    const idFields: string[] = [];
+    const uniqueFields: string[] = [];
 
-    let fieldString = `${name} ${type}`;
+    const fieldStrings = fields.map((field) => {
+      const { name, type, isId, isOptional, isUnique, prismaDefault, mapField, db } = field;
 
-    if (isOptional == true) {
-      fieldString += "?";
+      let fieldString = `${name} ${type}`;
+
+      if (isOptional == true) {
+        fieldString += "?";
+      } else {
+        fieldString += "";
+      }
+
+      if (isId) {
+        idFields.push(name!);
+      }
+
+      if (isUnique) {
+        uniqueFields.push(name!);
+      }
+
+      if (prismaDefault) {
+        fieldString += ` @default(${prismaDefault}())`;
+      }
+
+      if (mapField) {
+        fieldString += ` @map("${mapField}")`;
+      }
+
+      if (db) {
+        fieldString += ` @db.${db}`;
+      }
+
+      return fieldString;
+    });
+
+    const modelString = `model ${className} {\n  ${fieldStrings.join("\n  ")}\n}`;
+
+    const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
+    const schemaContent = fs.readFileSync(schemaPath, "utf-8");
+
+    const modelRegex = new RegExp(`model ${className} {[^}]*}`, "g");
+    const modelExists = modelRegex.test(schemaContent);
+
+    let updatedContent;
+    if (modelExists) {
+      // Update the existing model
+      updatedContent = schemaContent.replace(modelRegex, modelString);
     } else {
-      fieldString += "";
+      // Add the new model after the [Models] comment
+      updatedContent = schemaContent.replace("// [Models]", `// [Models]\n\n${modelString}`);
     }
 
-    if (isId) {
-      idFields.push(name!);
-      //fieldString += " @id";
+    // Join the idFields with comma separation and add them as a new fieldString if there's more than one id field
+    if (idFields.length > 1) {
+      const idFieldsString = `@@id([${idFields.join(", ")}])`;
+      const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
+      updatedContent = updatedContent.replace(modelRegex, `$1\n  ${idFieldsString}\n`);    
+    } else if (idFields.length === 1) {
+      updatedContent = updatedContent.replace(
+        new RegExp(`(${idFields[0]} [A-Za-z]*)`),
+        `$1 @id`
+      )
     }
 
-    /* if (isId && idFields.length === 1) {
-      fieldString += " @id";
-    } */
-
-    if (isUnique) {
-      fieldString += " @unique";
+    // Join the uniqueFields with comma separation and add them as a new fieldString if there's more than one unique field
+    if (uniqueFields.length > 1) {
+      const uniqueFieldsString = `@@unique([${uniqueFields.join(", ")}])`;
+      const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
+      updatedContent = updatedContent.replace(modelRegex, `$1\n  ${uniqueFieldsString}\n`);
+    } else if (uniqueFields.length === 1) {
+      updatedContent = updatedContent.replace(
+        new RegExp(`(${uniqueFields[0]} [A-Za-z]*)`),
+        `$1 @unique`
+      )
     }
 
-    if (prismaDefault) {
-      fieldString += ` @default(${prismaDefault}())`;
+    // Add @@map model annotation
+    console.log(model.map);
+    if (model.map) {
+      const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
+      updatedContent = updatedContent.replace(modelRegex, `$1\n  @@map("${model.map}")\n`);
     }
 
-    if (map) {
-      fieldString += ` @map("${map}")`;
-    }
-
-    if (db) {
-      fieldString += ` @db.${db}`;
-    }
-
-    return fieldString;
-  });
-
-  const modelString = `model ${className} {\n  ${fieldStrings.join("\n  ")}\n}`;
-
-  const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
-  const schemaContent = fs.readFileSync(schemaPath, "utf-8");
-
-  const modelRegex = new RegExp(`model ${className} {[^}]*}`, "g");
-  const modelExists = modelRegex.test(schemaContent);
-
-  let updatedContent;
-  if (modelExists) {
-    // Update the existing model
-    updatedContent = schemaContent.replace(modelRegex, modelString);
+    fs.writeFileSync(schemaPath, updatedContent);
   } else {
-    // Add the new model after the [Models] comment
-    updatedContent = schemaContent.replace("// [Models]", `// [Models]\n\n${modelString}`);
+    console.error(`Could not find Prisma model options for ${cls.name}`);
   }
-
-  // Join the idFields with comma separation and add them as a new fieldString if there's more than one id field
-  if (idFields.length > 1) {
-    const idFieldsString = `@@id([${idFields.join(", ")}])`;
-    updatedContent = updatedContent.replace(`model ${className} {`, `model ${className} {\n  ${idFieldsString}`);
-  } else if (idFields.length === 1) {
-    updatedContent = updatedContent.replace(
-      new RegExp(`(${idFields[0]} [A-Za-z]*)`),
-      `$1 @id`
-    )
-  }
-
-  fs.writeFileSync(schemaPath, updatedContent);
+  
 }
 
 async function readAllEntities(): Promise<void> {

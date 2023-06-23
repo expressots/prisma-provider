@@ -7,14 +7,20 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = ""
 }
+
+// [Enums]
+
 
 // [Models]
 
 model User {
-  @@id([id, email])
-  id DateTime @unique @default(now())
-  email String @unique
+  id Int @id @default(autoincrement()) @map("_id")
 }
+
+
+
+
+
 

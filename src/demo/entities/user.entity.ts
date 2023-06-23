@@ -1,12 +1,10 @@
 import { PrismaDefault, PrismaField } from "../../prisma/decorators";
+import { PrismaModel } from "../../prisma/decorators/prismaModel.decorator";
 import { ScalarType } from "../../prisma/types/scalar.types";
 
 class User {
-  @PrismaField({ isId: true, isUnique: true, type: ScalarType.DateTime, prismaDefault: PrismaDefault.Now })
+  @PrismaField({ mapField: "_id", type: ScalarType.Int, isId: true, prismaDefault: PrismaDefault.AutoIncrement})
   id!: number;
-
-  @PrismaField({ isId: true, type: ScalarType.String, isUnique: true })
-  email!: string;
 
   constructor(name: string, age: number) {
   }

@@ -27,11 +27,11 @@ const PrismaFieldMapping: PrismaFieldTypeMap = {
 export interface PrismaFieldOptions<T = any> {
   type?: ScalarType;
   attr?: string;
-  isId?: boolean; // @id if there is more than one isId, @@id([id1, id2])
-  isOptional?: boolean;
-  isUnique?: boolean;
+  isId?: boolean; // 100%
+  isOptional?: boolean; // 100%
+  isUnique?: boolean; // 100%
   prismaDefault?: PrismaDefault;
-  map?: string;
+  mapField?: string; // 100%
   db?: string;
   transform?: (value: T) => any;
   name?: string;
@@ -52,7 +52,7 @@ export function PrismaField<T = any>(options: PrismaFieldOptions<T> = {}): Prope
       prismaDefault: options.prismaDefault || undefined,
       isOptional: options.isOptional || false,
       isUnique: options.isUnique || false,
-      map: options.map || undefined,
+      mapField: options.mapField || undefined,
       db: options.db || undefined,
       transform: options.transform || undefined,
     }

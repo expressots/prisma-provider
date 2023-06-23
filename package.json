@@ -61,13 +61,13 @@
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
+    "prisma": "^4.16.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@prisma/client": "^4.13.0",
+    "@prisma/client": "^4.16.1",
     "class-transformer": "^0.5.1",
-    "prisma": "^4.13.0",
     "reflect-metadata": "^0.1.13"
   },
   "prisma": {
