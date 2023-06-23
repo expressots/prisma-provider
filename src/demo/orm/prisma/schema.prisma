@@ -16,8 +16,16 @@ datasource db {
 // [Models]
 
 model User {
-  id Int @id @default(autoincrement()) @map("_id")
+  id Int @id
+
+  @@map("users")
 }
+
+
+
+
+
+
 
 
 

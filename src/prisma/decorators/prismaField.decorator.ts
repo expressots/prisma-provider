@@ -2,10 +2,13 @@ import "reflect-metadata";
 import { ScalarType } from "../types/scalar.types";
 
 export enum PrismaDefault {
+  Auto = "auto",
   AutoIncrement = "autoincrement",
-  Now = "now",
+  Sequence = "sequence",
   Cuid = "cuid",
   Uuid = "uuid",
+  Now = "now",
+  DBgenerated = "dbgenerated"
 }
 
 type PrismaFieldTypeMap = {
