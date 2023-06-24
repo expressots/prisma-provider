@@ -20,15 +20,15 @@ export function prismaIndex<T = any>(options: IPrismaIndexOptions<T>): ClassDeco
       Reflect.defineMetadata("prisma:index", [], target.constructor);
     }
     
-    const indexes = Reflect.getMetadata("prisma:index", target.constructor) as IPrismaIndexOptions[];
+    const indexOptions = Reflect.getMetadata("prisma:index", target) as IPrismaIndexOptions[] || [];
     const indexOption: IPrismaIndexOptions = {
-        fields: options.fields,
-        map: options.map || undefined,
-        name: options.name || undefined,
-        type: options.type || undefined,
-    }
+      fields: options.fields,
+      map: options.map,
+      name: options.name,
+      type: options.type,
+    };
 
-    indexes.push(indexOption);
-    Reflect.defineMetadata("prisma:index", indexes, target.constructor);
+    indexOptions.push(indexOption);
+    Reflect.defineMetadata("prisma:index", indexOptions, target);
   };
 }

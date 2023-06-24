@@ -60,9 +60,7 @@ function generatePrismaModel(cls: any): void {
 
   const model = (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
   const indexOptions = (Reflect.getMetadata("prisma:index", cls) as IPrismaIndexOptions[]) || [];
-
-  console.log("->", indexOptions);
-
+  
   if (model) {
     const className = cls.name;
     const fields = (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
@@ -154,23 +152,24 @@ function generatePrismaModel(cls: any): void {
     }
 
     // Add @@index model annotation
-    console.log(indexOptions);
     if (indexOptions) {
-      const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
-   /*    const indexString = indexOptions.fields.join(', ');
+      for(const index of indexOptions) {
+        const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
+        const indexString = index.fields.join(', ');
 
-      const map: string = indexOptions.map ? `map: "${indexOptions.map}"` : "";
-      const name: string = indexOptions.name ? `name: "${indexOptions.name}"` : "";
-      const type: string = indexOptions.type ? `type: ${indexOptions.type}` : "";
+        const map: string = index.map ? `map: "${index.map}"` : "";
+        const name: string = index.name ? `name: "${index.name}"` : "";
+        const type: string = index.type ? `type: ${index.type}` : "";
 
-      let mapping: Array<any> = [];
-      mapping.push(`[${indexString}]`);
-      if (map) mapping.push(map);
-      if (name) mapping.push(name);
-      if (type) mapping.push(type);
+        let mapping: Array<any> = [];
+        mapping.push(`[${indexString}]`);
+        if (map) mapping.push(map);
+        if (name) mapping.push(name);
+        if (type) mapping.push(type);
 
-      const indexGrouping = mapping.join(', ');
-      updatedContent = updatedContent.replace(modelRegex, `$1\n  @@index(${indexGrouping})\n`); */
+        const indexGrouping = mapping.join(', ');
+        updatedContent = updatedContent.replace(modelRegex, `$1\n  @@index(${indexGrouping})\n`);
+      }
     }
 
     fs.writeFileSync(schemaPath, updatedContent);
