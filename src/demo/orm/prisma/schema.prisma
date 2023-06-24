@@ -12,23 +12,11 @@ datasource db {
 
 // [Enums]
 
-
 // [Models]
 
 model User {
-  id Int @id
-
-  @@map("users")
+  id Int @id @default(autoincrement())
+  name String @unique
+  email String
+  sin String
 }
-
-
-
-
-
-
-
-
-
-
-
-

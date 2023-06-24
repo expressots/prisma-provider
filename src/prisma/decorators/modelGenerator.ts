@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { PrismaFieldOptions, PrismaModelOptions } from ".";
+import { IPrismaFieldOptions, IPrismaModelOptions } from ".";
+import { IPrismaIndexOptions } from "./index.decorator";
 
 const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
@@ -57,13 +58,16 @@ async function removePrismaModels(): Promise<void> {
 
 function generatePrismaModel(cls: any): void {
 
-  const model = (Reflect.getMetadata("prisma:model", cls) as PrismaModelOptions) || false;
+  const model = (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
+  const indexOptions = (Reflect.getMetadata("prisma:index", cls) as IPrismaIndexOptions[]) || [];
+
+  console.log("->", indexOptions);
 
   if (model) {
     const className = cls.name;
-    const fields = (Reflect.getMetadata("prisma:fields", cls) as PrismaFieldOptions[]) || [];
+    const fields = (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
 
-    console.log(fields);
+    //console.log(fields);
 
     const idFields: string[] = [];
     const uniqueFields: string[] = [];
@@ -150,10 +154,23 @@ function generatePrismaModel(cls: any): void {
     }
 
     // Add @@index model annotation
-    if (model.index) {
+    console.log(indexOptions);
+    if (indexOptions) {
       const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
-      const indexString = model.index.join(', ');
-      updatedContent = updatedContent.replace(modelRegex, `$1\n  @@index([${indexString}])\n`);
+   /*    const indexString = indexOptions.fields.join(', ');
+
+      const map: string = indexOptions.map ? `map: "${indexOptions.map}"` : "";
+      const name: string = indexOptions.name ? `name: "${indexOptions.name}"` : "";
+      const type: string = indexOptions.type ? `type: ${indexOptions.type}` : "";
+
+      let mapping: Array<any> = [];
+      mapping.push(`[${indexString}]`);
+      if (map) mapping.push(map);
+      if (name) mapping.push(name);
+      if (type) mapping.push(type);
+
+      const indexGrouping = mapping.join(', ');
+      updatedContent = updatedContent.replace(modelRegex, `$1\n  @@index(${indexGrouping})\n`); */
     }
 
     fs.writeFileSync(schemaPath, updatedContent);
@@ -167,13 +184,11 @@ function generatePrismaModel(cls: any): void {
 
     let updatedContent;
     if (modelExists) { 
-      // TODO: this replace not remove empty line on schema.prisma
-      // Need to fix this later for remove empty lines on schema.prisma
       updatedContent = schemaContent.replace(modelRegex, '');
       fs.writeFileSync(schemaPath, updatedContent);
     }
   }
-
+  // TODO: add npx prisma format command to clean up blank lines and adjust file to be prisma compliance
 }
 
 async function readAllEntities(): Promise<void> {

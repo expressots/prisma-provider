@@ -27,7 +27,7 @@ const PrismaFieldMapping: PrismaFieldTypeMap = {
   Decimal: "Decimal",
 };
 
-export interface PrismaFieldOptions<T = any> {
+export interface IPrismaFieldOptions<T = any> {
   type?: ScalarType;
   attr?: string;
   isId?: boolean; // 100%
@@ -40,14 +40,14 @@ export interface PrismaFieldOptions<T = any> {
   name?: string;
 }
 
-export function PrismaField<T = any>(options: PrismaFieldOptions<T> = {}): PropertyDecorator {
+export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): PropertyDecorator {
   return function (target: Object, propertyKey: string | symbol) {
     if (!Reflect.hasMetadata("prisma:fields", target.constructor)) {
       Reflect.defineMetadata("prisma:fields", [], target.constructor);
     }
 
-    const fields = Reflect.getMetadata("prisma:fields", target.constructor) as PrismaFieldOptions[];
-    const field: PrismaFieldOptions = { 
+    const fields = Reflect.getMetadata("prisma:fields", target.constructor) as IPrismaFieldOptions[];
+    const field: IPrismaFieldOptions = { 
       name : options.name || propertyKey.toString(),
       type: options.type || ScalarType.String,
       attr: options.attr || PrismaFieldMapping[options.type || ScalarType.String],
