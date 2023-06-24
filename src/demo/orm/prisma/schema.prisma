@@ -10,6 +10,8 @@ datasource db {
   url      = ""
 }
 
+// [Types]
+
 // [Enums]
 
 // [Models]
@@ -17,6 +19,8 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
   name String @unique
-  email String
-  sin String
+
+  @@map("users")
 }
+
+

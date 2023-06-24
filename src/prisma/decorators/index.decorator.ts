@@ -1,6 +1,6 @@
 export enum IndexType {
     Brin = "Brin",
-    Btree = "Btree",
+    Btree = "BTree",
     Gist = "Gist",
     Gin = "Gin",
     Hash = "Hash",
@@ -14,21 +14,34 @@ export interface IPrismaIndexOptions<T = any> {
     type?: IndexType | undefined,
 }
 
-export function prismaIndex<T = any>(options: IPrismaIndexOptions<T>): ClassDecorator {
-  return function (target: Function) {
-    if (!Reflect.hasMetadata("prisma:index", target)) {
-      Reflect.defineMetadata("prisma:index", [], target.constructor);
-    }
-    
-    const indexOptions = Reflect.getMetadata("prisma:index", target) as IPrismaIndexOptions[] || [];
-    const indexOption: IPrismaIndexOptions = {
-      fields: options.fields,
-      map: options.map,
-      name: options.name,
-      type: options.type,
-    };
+export function prismaIndex<T = any>(options: IPrismaIndexOptions<T>): ClassDecorator & PropertyDecorator {
+  return function (target: Object, propertyKey?: string | symbol) {
+    if (propertyKey) {
+        const indexOptions = Reflect.getMetadata("prisma:index", target.constructor) as IPrismaIndexOptions[] || [];
+        const indexOption: IPrismaIndexOptions = {
+            fields: options.fields,
+            map: options.map,
+            name: options.name,
+            type: options.type,
+        };
+        indexOptions.push(indexOption);
+        Reflect.defineMetadata("prisma:index", indexOptions, target.constructor);
+    }  else {
 
-    indexOptions.push(indexOption);
-    Reflect.defineMetadata("prisma:index", indexOptions, target);
+        if (!Reflect.hasMetadata("prisma:index", target)) {
+        Reflect.defineMetadata("prisma:index", [], target.constructor);
+        }
+   
+        const indexOptions = Reflect.getMetadata("prisma:index", target) as IPrismaIndexOptions[] || [];
+        const indexOption: IPrismaIndexOptions = {
+        fields: options.fields,
+        map: options.map,
+        name: options.name,
+        type: options.type,
+        };
+
+        indexOptions.push(indexOption);
+        Reflect.defineMetadata("prisma:index", indexOptions, target);
+    }
   };
 }

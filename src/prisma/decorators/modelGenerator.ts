@@ -8,7 +8,6 @@ const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
 async function removePrismaModels(): Promise<void> {
   const entitiesPath = path.join(PROJECT_ROOT, 'demo', 'entities');
-  console.log('entitiesPath', entitiesPath);
 
   try {
     const files = glob.sync(`${entitiesPath}/**/*.entity.ts`);
@@ -64,8 +63,6 @@ function generatePrismaModel(cls: any): void {
   if (model) {
     const className = cls.name;
     const fields = (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
-
-    //console.log(fields);
 
     const idFields: string[] = [];
     const uniqueFields: string[] = [];
