@@ -14,14 +14,23 @@ datasource db {
 
 // [Enums]
 
+enum Role {
+  ADMIN
+  REGULAR
+  MANAGER
+}
+
+enum Color {
+  RED
+  GREEN
+  BLUE
+}
+
 // [Models]
 
 model User {
   id String @id @db.Text @default(uuid())
-  name String @db.Text
+  name String
+  color Color
   role Role
 }
-
-
-
-

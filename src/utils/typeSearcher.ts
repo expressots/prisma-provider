@@ -1,15 +1,14 @@
 import fs from 'fs';
 import glob from 'glob';
 
-// Função para transformar enum do TypeScript em enum do Prisma
+// function to transform the enum to prisma format
 function transformEnum(enumName: string, enumValues: string[]): string {
-  const prismaEnumValues = enumValues.map(value => value.toUpperCase()).join(",\n  ");
+  const prismaEnumValues = enumValues.map(value => value.toUpperCase()).join("\n  ");
   return `enum ${enumName} {
   ${prismaEnumValues}
 }`;
 }
 
-// Classe TypeSearcher
 class TypeSearcher {
   constructor(private searchName: string, private searchPath: string) {}
 
@@ -32,16 +31,14 @@ class TypeSearcher {
           if (enumDeclaration) {
             const enumName = this.searchName;
             const enumValues = enumDeclaration.split(",")
-              .map(value => value.trim().split("=")[0].trim()) // Remover qualquer valor atribuído
-              .filter(value => value); // Remover valores vazios
+              .map(value => value.trim().split("=")[0].trim()) // Remove values after "="
+              .filter(value => value); // Remove empty values
             const prismaEnum = transformEnum(enumName, enumValues);
         
-            // console.log(prismaEnum);
-            
             return prismaEnum;
           }
         } else if (typeMatch) {
-          // Lógica para processar os types, se necessário
+          // Logic to process the types
         }
       }
     }

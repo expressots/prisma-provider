@@ -7,10 +7,6 @@ export const enum Remarks {
   CompositeId = "@@id",
 }
 
-
-
-
-
 type FieldModifierOptions = "[]" | "?";
 interface FieldModifier {
   name: string;

@@ -1,6 +1,7 @@
 enum Role {
     Admin = "Admin",
-    Regular = "Regular"
+    Regular = "Regular",
+    Manager = "Manager"
 }
 
 

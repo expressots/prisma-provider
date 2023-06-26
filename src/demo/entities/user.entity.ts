@@ -18,7 +18,7 @@ class User {
   @prismaField()
   name!: string;
 
-  @prismaField({ type: ScalarType.Enum, isOptional: false })
+  @prismaField({ type: "Color", isOptional: false })
   color!: Color;
 
   @prismaField({ type: "Role", isOptional: false })

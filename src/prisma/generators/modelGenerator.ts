@@ -3,6 +3,7 @@ import path from "path";
 import glob from "glob";
 import { IPrismaFieldOptions, IPrismaModelOptions } from "../decorators";
 import { IPrismaIndexOptions } from "../decorators/index.decorator";
+import TypeSearcher from "../../utils/typeSearcher";
 
 const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
@@ -99,8 +100,38 @@ function generatePrismaModel(cls: any): void {
         fieldString += ` @map("${mapField}")`;
       }
 
+      if (typeof type === "string") {
+        typesorenuns.push(type);
+      }
+
       return fieldString;
     });
+
+    // TODO: see how to search for enums and types using imports and the file itself
+    if (typesorenuns.length > 0) {
+      for (const type of typesorenuns) {
+        const newEnum = new TypeSearcher(type, './')
+        const enumPrisma = newEnum.search();
+        if (enumPrisma === undefined) {
+          continue;
+        }
+        // Save on schema.prisma
+        const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
+        const schemaContent = fs.readFileSync(schemaPath, "utf-8");
+
+        const enumRegex = new RegExp(`enum ${type} {[^}]*}`, "g");
+        const enumExists = enumRegex.test(schemaContent);
+        let updatedContent;
+        if (enumExists) {
+          // Update the existing model
+          updatedContent = schemaContent.replace(enumRegex, enumPrisma);
+        } else {
+        // Add the new model after the [Models] comment
+        updatedContent = schemaContent.replace("// [Enums]", `// [Enums]\n\n${enumPrisma}`);
+        }	
+        fs.writeFileSync(schemaPath, updatedContent);
+      }
+    }
 
     const modelString = `model ${className} {\n  ${fieldStrings.join("\n  ")}\n}`;
 

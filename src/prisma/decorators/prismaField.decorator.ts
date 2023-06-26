@@ -5,7 +5,6 @@ import { PostgresAttrType } from "../types/typeAttributes/postgres-attr";
 import { MySQLAttrType } from "../types/typeAttributes/mysql-attr";
 import { MssqlAttrType } from "../types/typeAttributes/msql-attr";
 import { CockroachDBAttrType } from "../types/typeAttributes/cockroachDB-attr";
-import TypeSearcher from "../../utils/typeSearcher";
 
 export enum PrismaDefault {
   Auto = "auto",
@@ -44,12 +43,6 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
       isOptional: options.isOptional || false,
       isUnique: options.isUnique || false,
       mapField: options.mapField || undefined,
-    }
-
-    if(typeof field.type === "string") {
-      const search = new TypeSearcher(field.type, './');
-      const enumPrisma = search.search();
-      console.log(enumPrisma);
     }
 
     console.log(field);
