@@ -1,15 +1,24 @@
 import { PrismaDefault, prismaField } from "../../prisma/decorators";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
 import { ScalarType } from "../../prisma/types/scalar.types";
-import { PostgresAttr } from "../../prisma/types/typeAttributes/postgres-attr";
+import { PostgresAttr } from './../../prisma/types/typeAttributes/postgres-attr';
+
+export enum Color {
+  Red = "red",
+  Green = "green",
+  Blue = "blue",
+}
 
 @prismaModel()
 class User {
   @prismaField({ type: ScalarType.String, attr: PostgresAttr.Text, isId: true, prismaDefault: PrismaDefault.Uuid})  
   id!: number;
 
-  @prismaField({ attr: PostgresAttr.Text})
+  @prismaField()
   name!: string;
+
+  @prismaField({ type: "Color", isOptional: true })
+  color!: Color;
 
   constructor(name: string, age: number) {
   }

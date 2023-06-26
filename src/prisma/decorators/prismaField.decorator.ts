@@ -1,7 +1,9 @@
+import { MongoAttrType } from './../types/typeAttributes/mongo-attr';
 import "reflect-metadata";
 import { ScalarType } from "../types/scalar.types";
 import { PostgresAttrType } from "../types/typeAttributes/postgres-attr";
 import { MySQLAttrType } from "../types/typeAttributes/mysql-attr";
+import { CockroachDBAttrType, MssqlAttrType } from '../types';
 
 export enum PrismaDefault {
   Auto = "auto",
@@ -30,15 +32,13 @@ const PrismaFieldMapping: PrismaFieldTypeMap = {
 };
 
 export interface IPrismaFieldOptions<T = any> {
-  type?: ScalarType;
-  attr?: PostgresAttrType | MySQLAttrType;
+  type?: ScalarType | string; // TODO: type needs to accept user created types
+  attr?: PostgresAttrType | MySQLAttrType | MongoAttrType | MssqlAttrType | CockroachDBAttrType;
   isId?: boolean; // 100%
   isOptional?: boolean; // 100%
   isUnique?: boolean; // 100%
   prismaDefault?: PrismaDefault; // 50% function - pending 50%: static value based on type
   mapField?: string; // 100%
-  db?: string;
-  transform?: (value: T) => any;
   name?: string;
 }
 
@@ -47,7 +47,7 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
     if (!Reflect.hasMetadata("prisma:fields", target.constructor)) {
       Reflect.defineMetadata("prisma:fields", [], target.constructor);
     }
-
+    
     const fields = Reflect.getMetadata("prisma:fields", target.constructor) as IPrismaFieldOptions[];
     const field: IPrismaFieldOptions = { 
       name : options.name || propertyKey.toString(),
