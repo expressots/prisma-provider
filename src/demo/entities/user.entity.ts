@@ -17,7 +17,7 @@ class User {
   @prismaField()
   name!: string;
 
-  @prismaField({ type: "Color", isOptional: true })
+  @prismaField({ type: ScalarType.String, isOptional: false })
   color!: Color;
 
   constructor(name: string, age: number) {

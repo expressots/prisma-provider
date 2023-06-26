@@ -19,7 +19,7 @@ datasource db {
 model User {
   id String @id @db.Text @default(uuid())
   name String
-  color Color?
+  color String
 }
 
 

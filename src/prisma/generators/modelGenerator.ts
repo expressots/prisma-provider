@@ -68,7 +68,7 @@ function generatePrismaModel(cls: any): void {
     const uniqueFields: string[] = [];
 
     const fieldStrings = fields.map((field) => {
-      const { name, type, attr, isId, isOptional, isUnique, prismaDefault, mapField, db } = field;
+      const { name, type, attr, isId, isOptional, isUnique, prismaDefault, mapField } = field;
 
       let fieldString = `${name} ${type}`;
 
@@ -96,10 +96,6 @@ function generatePrismaModel(cls: any): void {
 
       if (mapField) {
         fieldString += ` @map("${mapField}")`;
-      }
-
-      if (db) {
-        fieldString += ` @db.${db}`;
       }
 
       return fieldString;
@@ -202,7 +198,7 @@ async function readAllEntities(): Promise<void> {
   for (const file of files) {
     const fileContent = fs.readFileSync(file, "utf-8");
     const classNameMatch = fileContent.match(/class\s+(\w+)/);
-
+    
     if (!classNameMatch) {
       console.error(`Could not find class declaration in ${file}`);
       continue;
