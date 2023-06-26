@@ -18,8 +18,8 @@ datasource db {
 
 model User {
   id String @id @db.Text @default(uuid())
-  name String
-  color String
+  name String @db.Text
+  role Role
 }
 
 

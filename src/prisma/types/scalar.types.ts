@@ -7,7 +7,8 @@ const enum ScalarType {
     Decimal = "Decimal",
     DateTime = "DateTime",
     Json = "Json",
-    Bytes = "Bytes"   
+    Bytes = "Bytes",
+    Enum = "Enum"
 }
 
 export { ScalarType }

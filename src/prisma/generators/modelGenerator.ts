@@ -59,13 +59,14 @@ function generatePrismaModel(cls: any): void {
 
   const model = (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
   const indexOptions = (Reflect.getMetadata("prisma:index", cls) as IPrismaIndexOptions[]) || [];
-  
+
   if (model) {
     const className = cls.name;
     const fields = (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
 
     const idFields: string[] = [];
     const uniqueFields: string[] = [];
+    const typesorenuns: string[] = [];
 
     const fieldStrings = fields.map((field) => {
       const { name, type, attr, isId, isOptional, isUnique, prismaDefault, mapField } = field;
@@ -122,7 +123,7 @@ function generatePrismaModel(cls: any): void {
     if (idFields.length > 1) {
       const idFieldsString = `@@id([${idFields.join(", ")}])`;
       const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
-      updatedContent = updatedContent.replace(modelRegex, `$1\n  ${idFieldsString}\n`);    
+      updatedContent = updatedContent.replace(modelRegex, `$1\n  ${idFieldsString}\n`);
     } else if (idFields.length === 1) {
       updatedContent = updatedContent.replace(
         new RegExp(`(${idFields[0]} [A-Za-z]*)`),
@@ -150,7 +151,7 @@ function generatePrismaModel(cls: any): void {
 
     // Add @@index model annotation
     if (indexOptions) {
-      for(const index of indexOptions) {
+      for (const index of indexOptions) {
         const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
         const indexString = index.fields.join(', ');
 
@@ -179,7 +180,7 @@ function generatePrismaModel(cls: any): void {
     const modelExists = modelRegex.test(schemaContent);
 
     let updatedContent;
-    if (modelExists) { 
+    if (modelExists) {
       updatedContent = schemaContent.replace(modelRegex, '');
       fs.writeFileSync(schemaPath, updatedContent);
     }
@@ -198,7 +199,7 @@ async function readAllEntities(): Promise<void> {
   for (const file of files) {
     const fileContent = fs.readFileSync(file, "utf-8");
     const classNameMatch = fileContent.match(/class\s+(\w+)/);
-    
+
     if (!classNameMatch) {
       console.error(`Could not find class declaration in ${file}`);
       continue;
@@ -217,7 +218,7 @@ async function readAllEntities(): Promise<void> {
 }
 
 function codeFirstGen(): void {
-    readAllEntities();
+  readAllEntities();
 }
 
-export { codeFirstGen, removePrismaModels};
+export { codeFirstGen, removePrismaModels };
