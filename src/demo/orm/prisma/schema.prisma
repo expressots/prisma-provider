@@ -17,10 +17,10 @@ datasource db {
 // [Models]
 
 model User {
-  id Int @id @default(autoincrement())
-  name String @unique
-
-  @@map("users")
+  id String @id @db.Text @default(uuid())
+  name String @db.Text
 }
+
+
 
 

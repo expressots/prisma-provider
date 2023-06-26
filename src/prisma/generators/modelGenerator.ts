@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import glob from "glob";
-import { IPrismaFieldOptions, IPrismaModelOptions } from ".";
-import { IPrismaIndexOptions } from "./index.decorator";
+import { IPrismaFieldOptions, IPrismaModelOptions } from "../decorators";
+import { IPrismaIndexOptions } from "../decorators/index.decorator";
 
 const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
@@ -68,9 +68,13 @@ function generatePrismaModel(cls: any): void {
     const uniqueFields: string[] = [];
 
     const fieldStrings = fields.map((field) => {
-      const { name, type, isId, isOptional, isUnique, prismaDefault, mapField, db } = field;
+      const { name, type, attr, isId, isOptional, isUnique, prismaDefault, mapField, db } = field;
 
       let fieldString = `${name} ${type}`;
+
+      if (attr) {
+        fieldString += ` ${attr}`;
+      }
 
       if (isOptional == true) {
         fieldString += "?";
@@ -184,7 +188,6 @@ function generatePrismaModel(cls: any): void {
       fs.writeFileSync(schemaPath, updatedContent);
     }
   }
-  // TODO: add npx prisma format command to clean up blank lines and adjust file to be prisma compliance
 }
 
 async function readAllEntities(): Promise<void> {
@@ -209,8 +212,8 @@ async function readAllEntities(): Promise<void> {
 
     try {
       const module = await import(path.resolve(file));
-      const EntityClass = module.default || module[className];
-      generatePrismaModel(EntityClass);
+      const entityClass = module.default || module[className];
+      generatePrismaModel(entityClass);
     } catch (err) {
       console.error(`Error importing ${file}:`, err);
     }

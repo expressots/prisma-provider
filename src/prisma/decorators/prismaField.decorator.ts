@@ -1,5 +1,7 @@
 import "reflect-metadata";
 import { ScalarType } from "../types/scalar.types";
+import { PostgresAttrType } from "../types/typeAttributes/postgres-attr";
+import { MySQLAttrType } from "../types/typeAttributes/mysql-attr";
 
 export enum PrismaDefault {
   Auto = "auto",
@@ -29,11 +31,11 @@ const PrismaFieldMapping: PrismaFieldTypeMap = {
 
 export interface IPrismaFieldOptions<T = any> {
   type?: ScalarType;
-  attr?: string;
+  attr?: PostgresAttrType | MySQLAttrType;
   isId?: boolean; // 100%
   isOptional?: boolean; // 100%
   isUnique?: boolean; // 100%
-  prismaDefault?: PrismaDefault;
+  prismaDefault?: PrismaDefault; // 50% function - pending 50%: static value based on type
   mapField?: string; // 100%
   db?: string;
   transform?: (value: T) => any;
@@ -50,7 +52,7 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
     const field: IPrismaFieldOptions = { 
       name : options.name || propertyKey.toString(),
       type: options.type || ScalarType.String,
-      attr: options.attr || PrismaFieldMapping[options.type || ScalarType.String],
+      attr: options.attr || undefined,
       isId: options.isId || false,
       prismaDefault: options.prismaDefault || undefined,
       isOptional: options.isOptional || false,
@@ -59,7 +61,7 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
       db: options.db || undefined,
       transform: options.transform || undefined,
     }
-
+    console.log(field);
     fields.push(field);
     Reflect.defineMetadata("prisma:fields", fields, target.constructor);
   };

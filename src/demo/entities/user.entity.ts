@@ -1,14 +1,14 @@
 import { PrismaDefault, prismaField } from "../../prisma/decorators";
-import { IndexType, prismaIndex } from "../../prisma/decorators/index.decorator";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
 import { ScalarType } from "../../prisma/types/scalar.types";
+import { PostgresAttr } from "../../prisma/types/typeAttributes/postgres-attr";
 
-@prismaModel({ map: "users"})
+@prismaModel()
 class User {
-  @prismaField({isId: true, type: ScalarType.Int, prismaDefault: PrismaDefault.AutoIncrement })
+  @prismaField({ type: ScalarType.String, attr: PostgresAttr.Text, isId: true, prismaDefault: PrismaDefault.Uuid})  
   id!: number;
 
-  @prismaField({type: ScalarType.String, isUnique: true})
+  @prismaField({ attr: PostgresAttr.Text})
   name!: string;
 
   constructor(name: string, age: number) {
