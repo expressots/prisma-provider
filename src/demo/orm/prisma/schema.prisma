@@ -6,11 +6,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = ""
 }
 
 // [Types]
+
+enum format { 
+  jpg
+  png
+  gif
+  webp
+}
+type Photo {
+  height Int
+  width Int
+  url String
+}
 
 // [Enums]
 
@@ -33,4 +45,5 @@ model User {
   name String
   color Color
   role Role
+  photos Photo[]
 }

@@ -10,6 +10,12 @@ export enum Color {
   Blue = "blue",
 }
 
+type Photo = {
+  height: number;
+  width: number;
+  url: string;
+};
+
 @prismaModel()
 class User {
   @prismaField({ type: ScalarType.String, attr: PostgresAttr.Text, isId: true, prismaDefault: PrismaDefault.Uuid})  
@@ -24,6 +30,9 @@ class User {
   @prismaField({ type: "Role", isOptional: false })
   role!: Role;
 
+  @prismaField({ type: "Photo[]", isOptional: false })
+  photos!: Photo[];
+  
   constructor(name: string, age: number) {
   }
 }

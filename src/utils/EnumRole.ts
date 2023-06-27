@@ -4,5 +4,4 @@ enum Role {
     Manager = "Manager"
 }
 
-
 export { Role }

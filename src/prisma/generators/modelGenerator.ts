@@ -101,7 +101,9 @@ function generatePrismaModel(cls: any): void {
       }
 
       if (typeof type === "string") {
-        typesorenuns.push(type);
+        const regex = /\[|\]/g;
+        const newType = type.replace(regex, "");
+        typesorenuns.push(newType);
       }
 
       return fieldString;
@@ -118,17 +120,28 @@ function generatePrismaModel(cls: any): void {
         // Save on schema.prisma
         const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
         const schemaContent = fs.readFileSync(schemaPath, "utf-8");
-
-        const enumRegex = new RegExp(`enum ${type} {[^}]*}`, "g");
-        const enumExists = enumRegex.test(schemaContent);
         let updatedContent;
-        if (enumExists) {
-          // Update the existing model
-          updatedContent = schemaContent.replace(enumRegex, enumPrisma);
+        if (enumPrisma.includes('enum')) {
+          const enumRegex = new RegExp(`enum ${type} {[^}]*}`, "g");
+          const enumExists = enumRegex.test(schemaContent);
+          if (enumExists) {
+            // Update the existing model
+            updatedContent = schemaContent.replace(enumRegex, enumPrisma);
+          } else {
+            // Add the new model after the [Models] comment
+            updatedContent = schemaContent.replace("// [Enums]", `// [Enums]\n\n${enumPrisma}`);
+          }
         } else {
-        // Add the new model after the [Models] comment
-        updatedContent = schemaContent.replace("// [Enums]", `// [Enums]\n\n${enumPrisma}`);
-        }	
+          const enumRegex = new RegExp(`type ${type} {[^}]*}`, "g");
+          const enumExists = enumRegex.test(schemaContent);
+          if (enumExists) {
+            // Update the existing model
+            updatedContent = schemaContent.replace(enumRegex, enumPrisma);
+          } else {
+            // Add the new model after the [Models] comment
+            updatedContent = schemaContent.replace("// [Types]", `// [Enums]\n\n${enumPrisma}`);
+          }
+        }
         fs.writeFileSync(schemaPath, updatedContent);
       }
     }
