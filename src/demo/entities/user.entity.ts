@@ -1,8 +1,8 @@
 import { PrismaDefault, prismaField } from "../../prisma/decorators";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
 import { ScalarType } from "../../prisma/types/scalar.types";
-import { Role } from "../../utils/EnumRole";
-import { PostgresAttr } from './../../prisma/types/typeAttributes/postgres-attr';
+import { PostgresAttr } from '../../prisma/types/typeAttributes/postgres-attr';
+import { Role } from "./role";
 
 export enum Color {
   Red = "red",
@@ -24,17 +24,17 @@ class User {
   @prismaField()
   name!: string;
 
-  @prismaField({ type: "Color", isOptional: false })
+  @prismaField({ type: Color, isOptional: false })
   color!: Color;
 
-  @prismaField({ type: "Role", isOptional: false })
+  @prismaField({ type: Role, isOptional: false })
   role!: Role;
 
   @prismaField({ type: "Photo[]", isOptional: false })
-  photos!: Photo[];
+  photos!: Photo;
   
   constructor(name: string, age: number) {
   }
 }
 
-export default User;
+export { User };

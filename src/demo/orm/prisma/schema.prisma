@@ -12,31 +12,9 @@ datasource db {
 
 // [Types]
 
-enum format { 
-  jpg
-  png
-  gif
-  webp
-}
-type Photo {
-  height Int
-  width Int
-  url String
-}
 
 // [Enums]
 
-enum Role {
-  ADMIN
-  REGULAR
-  MANAGER
-}
-
-enum Color {
-  RED
-  GREEN
-  BLUE
-}
 
 // [Models]
 

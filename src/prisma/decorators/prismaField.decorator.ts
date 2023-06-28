@@ -17,7 +17,7 @@ export enum PrismaDefault {
 }
 
 export interface IPrismaFieldOptions<T = any> {
-  type?: ScalarType | string; // TODO: type needs to accept user created types
+  type?: ScalarType | Object | string; // TODO: type needs to accept user created types
   attr?: PostgresAttrType | MySQLAttrType | MongoAttrType | MssqlAttrType | CockroachDBAttrType;
   isId?: boolean; // 100%
   isOptional?: boolean; // 100%
@@ -36,7 +36,7 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
     const fields = Reflect.getMetadata("prisma:fields", target.constructor) as IPrismaFieldOptions[];
     const field: IPrismaFieldOptions = { 
       name : options.name || propertyKey.toString(),
-      type: options.type || ScalarType.String,
+      type: options.type || ScalarType.String || Object || String ,
       attr: options.attr || undefined,
       isId: options.isId || false,
       prismaDefault: options.prismaDefault || undefined,
