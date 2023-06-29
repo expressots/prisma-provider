@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgres"
   url      = ""
 }
 
@@ -38,5 +38,6 @@ model User {
   color Color[]
   role Role
   photos Photo[]
+  money Decimal @db.Decimal(p, s)
 }
 

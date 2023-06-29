@@ -32,6 +32,9 @@ class User {
 
   @prismaField({ type: "Photo[]", isOptional: false })
   photos!: Photo[];
+
+  @prismaField({ type: ScalarType.Decimal, attr: PostgresAttr.Decimal })
+  money!: number;
   
   constructor(name: string, age: number) {
   }

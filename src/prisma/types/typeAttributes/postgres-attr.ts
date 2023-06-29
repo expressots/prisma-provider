@@ -20,6 +20,7 @@ enum FloatAttrPostgres {
 }
 
 enum DecimalAttrPostgres {
+    Decimal = "@db.Decimal(p, s)",
     Money = "@db.Money"
 }
 
