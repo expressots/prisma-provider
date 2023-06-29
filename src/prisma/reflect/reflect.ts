@@ -1,7 +1,8 @@
 import * as ts from 'typescript';
 import { glob } from 'glob';
 import { FileArray, FileGlob, FileModule } from './file-module';
-import { FileInfo, processFile } from './process-file';
+import { processFile } from './process-file';
+import { FileInfo } from './file-info';
 
 
 export function reflect(files: FileArray | FileGlob): FileInfo[] {

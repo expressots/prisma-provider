@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import * as path from 'path';
 
 export type FileArray = {
     fileArray: string[]
@@ -36,21 +37,46 @@ export class FileModule {
         return !(isStandardLibrary || isExternal) && hasDeclaration;
     }
 
-    public processProperty(type: ts.Type, node: ts.Node, callback: (propertyName: string, propertyType: string) => void): void {
+    public processProperty(type: ts.Type, node: ts.Node, sourceFile: ts.SourceFile, callback: (propertyName: string, propertyType: string, pathDeclaration: string) => void): void {
+        let pathDeclaration = "";
+
         for (const property of type.getProperties()) {
             const propertyType = this.checker.getTypeOfSymbolAtLocation(property, node);
             const propertySymbol = propertyType.getSymbol()!;
-            const propertyTypeName = this.checker.typeToString(propertyType);
+            let propertyTypeName = this.checker.typeToString(propertyType);
+            
+            if (this.checker.isArrayType(propertyType)) {
 
-            if (this.isTypeLocal(propertySymbol)) {
-                // console.log(`${property.name}: ${propertyTypeName}`)
-                
-                //this.processProperty(propertyType, node) // avoid deep dive
-                callback(property.name, propertyTypeName);
-                // this.processProperty(propertyType, node); // evitar aprofundamento desnecessário
+                const elementType = (propertyType as ts.TypeReference).typeArguments?.[0];
+
+                if (elementType) {
+                    const elementTypeSymbol = elementType.getSymbol()!;
+                    const elementDeclaration = elementTypeSymbol?.getDeclarations();
+
+                    if (elementDeclaration && elementDeclaration.length > 0) {
+                        const declaration = elementDeclaration[0];
+                        const sourceFileDirname = path.dirname(sourceFile.fileName);
+                        const filePath = path.resolve(sourceFileDirname, declaration.getSourceFile().fileName);
+
+                        pathDeclaration = `${filePath}`;
+                    }
+                }
             } else {
-                callback(property.name, propertyTypeName);
-                // console.log(`${sproperty.name}: ${propertyTypeName}`)
+                const declarations = propertySymbol?.getDeclarations();
+            
+                if (declarations && declarations.length > 0) {
+                    const declaration = declarations[0];
+                    const sourceFileDirname = path.dirname(sourceFile.fileName);
+                    const filePath = path.resolve(sourceFileDirname, declaration.getSourceFile().fileName);
+    
+                    pathDeclaration = `${filePath}`;
+                }
+            }
+        
+            if (this.isTypeLocal(propertySymbol)) {
+                callback(property.name, propertyTypeName, pathDeclaration);
+            } else {
+                callback(property.name, propertyTypeName, pathDeclaration);
             }
         }
     }
