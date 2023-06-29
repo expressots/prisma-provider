@@ -205,7 +205,7 @@ function generatePrismaModel(cls: any, filePath: string): void {
             }
           } else {
             const typeRegex = new RegExp(value, "g");
-            const typeExists = modelRegex.test(schemaContent);
+            const typeExists = typeRegex.test(schemaContent);
             if (typeExists) {
               updatedContent = updatedContent.replace(typeRegex, value);
             } else {
@@ -264,10 +264,10 @@ async function readAllEntities(): Promise<void> {
   }
 }
 
-function codeFirstGen(): void {
-  readAllEntities();
+async function codeFirstGen(): Promise<void> {
+  await readAllEntities();
   const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
-  removeUnusedEnumsAndTypes(schemaPath);
+  await removeUnusedEnumsAndTypes(schemaPath);
 }
 
 export { codeFirstGen, removePrismaModels };

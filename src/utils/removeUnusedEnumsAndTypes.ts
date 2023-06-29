@@ -5,10 +5,10 @@ interface PrismaSchema {
   types: string[];
 }
 
-export default function removeUnusedEnumsAndTypes(filePath: string): void {
+export default async function removeUnusedEnumsAndTypes(filePath: string): Promise<void> {
   // Ler o conteúdo do arquivo
   let fileContent = fs.readFileSync(filePath, 'utf8');
-
+  
   // Extrair os enums e tipos do arquivo
   const prismaSchema: PrismaSchema = {
     enums: [],
@@ -28,17 +28,18 @@ export default function removeUnusedEnumsAndTypes(filePath: string): void {
   }
 
   // Verificar se os enums e tipos são usados
-  const usedEnums = new Set<string>();
-  const usedTypes = new Set<string>();
+  const usedEnums: Set<string> = new Set();
+  const usedTypes: Set<string> = new Set();
 
   // Verificar se os enums são usados
   prismaSchema.enums.forEach((enumName) => {
     const enumRegex = new RegExp(`\\b${enumName}\\b`, 'g');
-    if (enumRegex.test(fileContent)) {
+    const matches = fileContent.match(enumRegex);
+    if (matches && matches.length >= 2) {
       usedEnums.add(enumName);
     }
   });
-
+  
   // Verificar se os tipos são usados
   prismaSchema.types.forEach((typeName) => {
     const typeRegex = new RegExp(`\\b${typeName}\\b`, 'g');

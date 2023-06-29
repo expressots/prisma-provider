@@ -12,6 +12,12 @@ datasource db {
 
 // [Types]
 
+type Photo {
+  height Int
+  width Int
+  url String
+}
+
 // [Enums]
 
 enum Role {
@@ -27,9 +33,10 @@ enum Color {
 // [Models]
 
 model User {
-  id String @id @db.Text @default(uuid())
+  id String @id @default(uuid()) @map("_id")
   name String
   color Color[]
   role Role
-  photos BigInt
+  photos Photo[]
 }
+

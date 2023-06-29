@@ -18,7 +18,7 @@ type Photo = {
 
 @prismaModel()
 class User {
-  @prismaField({ type: ScalarType.String, attr: PostgresAttr.Text, isId: true, prismaDefault: PrismaDefault.Uuid})  
+  @prismaField({ isId: true, prismaDefault: PrismaDefault.Uuid, mapField: "_id"})  
   id!: string;
 
   @prismaField()
@@ -30,8 +30,8 @@ class User {
   @prismaField({ type: Role, isOptional: false })
   role!: Role;
 
-  @prismaField({ type: ScalarType.BigInt, isOptional: false })
-  photos!: String;
+  @prismaField({ type: "Photo[]", isOptional: false })
+  photos!: Photo[];
   
   constructor(name: string, age: number) {
   }
