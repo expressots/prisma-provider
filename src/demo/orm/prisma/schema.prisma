@@ -12,9 +12,23 @@ datasource db {
 
 // [Types]
 
+type Photo {
+  height Int
+  width Int
+  url String
+}
 
 // [Enums]
 
+enum Role {
+  ADMIN
+}
+
+enum Color {
+  RED
+  GREEN
+  BLUE
+}
 
 // [Models]
 
@@ -23,5 +37,5 @@ model User {
   name String
   color Color[]
   role Role
-  photos Photo[]
+  photos BigInt
 }

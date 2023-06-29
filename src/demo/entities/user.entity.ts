@@ -30,8 +30,8 @@ class User {
   @prismaField({ type: Role, isOptional: false })
   role!: Role;
 
-  @prismaField({ type: "Photo[]", isOptional: false })
-  photos!: Photo[];
+  @prismaField({ type: ScalarType.BigInt, isOptional: false })
+  photos!: String;
   
   constructor(name: string, age: number) {
   }

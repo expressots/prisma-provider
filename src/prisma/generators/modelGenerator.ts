@@ -4,9 +4,10 @@ import path from "path";
 import { IPrismaFieldOptions, IPrismaModelOptions } from "../decorators";
 import { IPrismaIndexOptions } from "../decorators/index.decorator";
 import { reflect } from "../reflect/reflect";
-import { ScalarType, ScalarTypeMap } from "../types";
 import { FileInfo } from "../reflect/file-info";
 import { ClassExtractor } from "../reflect/extractor/class-extractor";
+import typeSearcher from "../../utils/typeSearcher";
+import removeUnusedEnumsAndTypes from "../../utils/removeUnusedEnumsAndTypes";
 
 const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
@@ -60,11 +61,11 @@ async function removePrismaModels(): Promise<void> {
 }
 
 function generatePrismaModel(cls: any, filePath: string): void {
-  const reflectInfo: FileInfo[] = reflect({fileArray: [filePath]});
-  
+  const reflectInfo: FileInfo[] = reflect({ fileArray: [filePath] });
+
   const model = (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
   const indexOptions = (Reflect.getMetadata("prisma:index", cls) as IPrismaIndexOptions[]) || [];
-  
+
   if (model) {
     const className = cls.name;
     const fields = (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
@@ -72,26 +73,25 @@ function generatePrismaModel(cls: any, filePath: string): void {
 
     const idFields: string[] = [];
     const uniqueFields: string[] = [];
-    const typesOrEnums: string[] = [];
-    
+
     const fieldStrings = fields.map((field) => {
       const { name, type, attr, isId, isOptional, isUnique, prismaDefault, mapField } = field;
 
       let convertedType: string | undefined = undefined;
       let convertedName: string | undefined = undefined;
-      
+
       if (typeof type === 'object') {
         convertedName = classInfo?.properties.find(x => x.name === name)?.name;
         convertedType = classInfo?.properties.find(x => x.name === name)?.type;
       }
-      
+
       let fieldString: string;
-      if(convertedType && convertedName) {
+      if (convertedType && convertedName) {
         fieldString = `${convertedName} ${convertedType}`;
       } else {
         fieldString = `${name} ${type}`;
-      }   
-      
+      }
+
       if (attr) {
         fieldString += ` ${attr}`;
       }
@@ -191,11 +191,30 @@ function generatePrismaModel(cls: any, filePath: string): void {
 
     // Collect the depending types
     classInfo?.properties.forEach((property) => {
-      if (property.pathDeclaration !== "") {
-        console.log(property)
+      if (property.pathDeclaration && property.pathDeclaration !== "") {
+        const type = property.type.replace(/[\[\]?!]/g, '');
+        const value = typeSearcher(type, property.pathDeclaration);
+        if (value) {
+          if (value?.includes("enum")) {
+            const enumRegex = new RegExp(value, "g");
+            const enumExists = enumRegex.test(schemaContent);
+            if (enumExists) {
+              updatedContent = updatedContent.replace(enumRegex, value);
+            } else {
+              updatedContent = updatedContent.replace("// [Enums]", `// [Enums]\n\n${value}`);
+            }
+          } else {
+            const typeRegex = new RegExp(value, "g");
+            const typeExists = modelRegex.test(schemaContent);
+            if (typeExists) {
+              updatedContent = updatedContent.replace(typeRegex, value);
+            } else {
+              updatedContent = updatedContent.replace("// [Types]", `// [Types]\n\n${value}`);
+            }
+          }
+        }
       };
     });
-
 
     fs.writeFileSync(schemaPath, updatedContent);
     // remove model if not decorated
@@ -216,7 +235,7 @@ function generatePrismaModel(cls: any, filePath: string): void {
 }
 
 async function readAllEntities(): Promise<void> {
-  const entitiesPath = path.join(PROJECT_ROOT,"demo", "/entities");
+  const entitiesPath = path.join(PROJECT_ROOT, "demo", "/entities");
 
   const files = glob.sync(`${entitiesPath}/**/*.entity.ts`);
   if (!files) {
@@ -247,6 +266,8 @@ async function readAllEntities(): Promise<void> {
 
 function codeFirstGen(): void {
   readAllEntities();
+  const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
+  removeUnusedEnumsAndTypes(schemaPath);
 }
 
 export { codeFirstGen, removePrismaModels };
