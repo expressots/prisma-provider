@@ -38,6 +38,6 @@ model User {
   color Color[]
   role Role
   photos Photo[]
-  money Decimal @db.Decimal(p, s)
+  money Decimal @db.Decimal(10, 2)
 }
 

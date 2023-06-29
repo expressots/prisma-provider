@@ -1,3 +1,4 @@
+export * from "./attr-function";
 export * from "./cockroachDB-attr";
 export * from "./mongo-attr";
 export * from "./msql-attr";
