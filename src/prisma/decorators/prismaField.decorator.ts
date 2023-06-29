@@ -45,7 +45,7 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
       mapField: options.mapField || undefined,
     }
 
-    console.log(field);
+    //console.log(field);
     fields.push(field);
     Reflect.defineMetadata("prisma:fields", fields, target.constructor);
   };

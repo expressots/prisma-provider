@@ -1,12 +1,12 @@
 import fs from "fs";
-import path from "path";
 import glob from "glob";
+import path from "path";
 import { IPrismaFieldOptions, IPrismaModelOptions } from "../decorators";
 import { IPrismaIndexOptions } from "../decorators/index.decorator";
-import TypeSearcher from "../../utils/typeSearcher";
 import { reflect } from "../reflect/reflect";
-import { FileInfo } from "../reflect/process-file";
 import { ScalarType, ScalarTypeMap } from "../types";
+import { FileInfo } from "../reflect/file-info";
+import { ClassExtractor } from "../reflect/extractor/class-extractor";
 
 const PROJECT_ROOT = path.join(__dirname, "..", "..", "..", "src");
 
@@ -45,9 +45,9 @@ async function removePrismaModels(): Promise<void> {
     // Create an array with the models found in schema.prisma, removing extra whitespace
     const inPrisma: string[] = models.map((model) => model.trim());
     // Filter out the models found in schema.prisma that are not present in the new models list
-    const retorno = inPrisma.filter((item) => !news.some((substring) => item.includes(substring)));
+    const results = inPrisma.filter((item) => !news.some((substring) => item.includes(substring)));
     let updatedContent = schemaContent;
-    for (const item of retorno) {
+    for (const item of results) {
       // Remove the old models from the file content
       updatedContent = updatedContent.replace(item, '');
     }
@@ -68,7 +68,7 @@ function generatePrismaModel(cls: any, filePath: string): void {
   if (model) {
     const className = cls.name;
     const fields = (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
-    const classInfo = reflectInfo[0].classes.filter((cls) => cls.name === className)[0];
+    const classInfo = ClassExtractor.byName(ClassExtractor.classes(reflectInfo), className);
 
     const idFields: string[] = [];
     const uniqueFields: string[] = [];
@@ -79,24 +79,19 @@ function generatePrismaModel(cls: any, filePath: string): void {
 
       let convertedType: string | undefined = undefined;
       let convertedName: string | undefined = undefined;
-      // get class with name === className from reflectInfo[0].classes
-      if(typeof type === "object") {
-        // TODO: filter classes by name
-        convertedName = classInfo.properties.filter((prop) => prop.name === name)[0].name;
-        convertedType = classInfo.properties.filter((prop) => prop.name === name)[0].type;
+      
+      if (typeof type === 'object') {
+        convertedName = classInfo?.properties.find(x => x.name === name)?.name;
+        convertedType = classInfo?.properties.find(x => x.name === name)?.type;
       }
       
       let fieldString: string;
       if(convertedType && convertedName) {
         fieldString = `${convertedName} ${convertedType}`;
-        typesOrEnums.push(convertedType);
       } else {
         fieldString = `${name} ${type}`;
-        if (!ScalarTypeMap.includes(type?.toString() as ScalarType)) {
-          typesOrEnums.push(type?.toString() as string);
-        }
-      }
-
+      }   
+      
       if (attr) {
         fieldString += ` ${attr}`;
       }
@@ -125,42 +120,6 @@ function generatePrismaModel(cls: any, filePath: string): void {
 
       return fieldString;
     });
-
-    console.log(reflectInfo)
-    if (typesOrEnums.length > 0) {
-      for (const x of typesOrEnums) {
-        console.log(x)
-        // const newEnum = new TypeSearcher(type, './')
-        // const enumPrisma = newEnum.search();
-
-        // // Save on schema.prisma
-        // const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");
-        // const schemaContent = fs.readFileSync(schemaPath, "utf-8");
-        // let updatedContent;
-        // if (enumPrisma.includes('enum')) {
-        //   const enumRegex = new RegExp(`enum ${type} {[^}]*}`, "g");
-        //   const enumExists = enumRegex.test(schemaContent);
-        //   if (enumExists) {
-        //     // Update the existing model
-        //     updatedContent = schemaContent.replace(enumRegex, enumPrisma);
-        //   } else {
-        //     // Add the new model after the [Models] comment
-        //     updatedContent = schemaContent.replace("// [Enums]", `// [Enums]\n\n${enumPrisma}`);
-        //   }
-        // } else {
-        //   const enumRegex = new RegExp(`type ${type} {[^}]*}`, "g");
-        //   const enumExists = enumRegex.test(schemaContent);
-        //   if (enumExists) {
-        //     // Update the existing model
-        //     updatedContent = schemaContent.replace(enumRegex, enumPrisma);
-        //   } else {
-        //     // Add the new model after the [Models] comment
-        //     updatedContent = schemaContent.replace("// [Types]", `// [Enums]\n\n${enumPrisma}`);
-        //   }
-        // }
-        // fs.writeFileSync(schemaPath, updatedContent);
-      }
-    }
 
     const modelString = `model ${className} {\n  ${fieldStrings.join("\n  ")}\n}`;
 
@@ -230,7 +189,16 @@ function generatePrismaModel(cls: any, filePath: string): void {
       }
     }
 
+    // Collect the depending types
+    classInfo?.properties.forEach((property) => {
+      if (property.pathDeclaration !== "") {
+        console.log(property)
+      };
+    });
+
+
     fs.writeFileSync(schemaPath, updatedContent);
+    // remove model if not decorated
   } else {
     const className = cls.name;
     const schemaPath = path.join(PROJECT_ROOT, "demo/orm/prisma", "/schema.prisma");

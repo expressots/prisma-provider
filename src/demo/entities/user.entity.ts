@@ -25,13 +25,13 @@ class User {
   name!: string;
 
   @prismaField({ type: Color, isOptional: false })
-  color!: Color;
+  color!: Color[];
 
   @prismaField({ type: Role, isOptional: false })
   role!: Role;
 
   @prismaField({ type: "Photo[]", isOptional: false })
-  photos!: Photo;
+  photos!: Photo[];
   
   constructor(name: string, age: number) {
   }
