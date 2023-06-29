@@ -12,12 +12,6 @@ datasource db {
 
 // [Types]
 
-type Photo {
-  height Int
-  width Int
-  url String
-}
-
 // [Enums]
 
 enum Role {

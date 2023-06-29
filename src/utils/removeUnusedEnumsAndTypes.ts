@@ -42,7 +42,8 @@ export default function removeUnusedEnumsAndTypes(filePath: string): void {
   // Verificar se os tipos são usados
   prismaSchema.types.forEach((typeName) => {
     const typeRegex = new RegExp(`\\b${typeName}\\b`, 'g');
-    if (typeRegex.test(fileContent)) {
+    const matches = fileContent.match(typeRegex);
+    if (matches && matches.length >= 2) {
       usedTypes.add(typeName);
     }
   });
