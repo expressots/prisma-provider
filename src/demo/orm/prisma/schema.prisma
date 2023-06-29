@@ -12,12 +12,6 @@ datasource db {
 
 // [Types]
 
-type Photo {
-  height Int
-  width Int
-  url String
-}
-
 // [Enums]
 
 enum Role {
@@ -37,7 +31,6 @@ model User {
   name String
   color Color[]
   role Role
-  photos Photo[]
-  money Decimal @db.Decimal(10, 2)
+  money Decimal @db.Decimal(10, 3)
 }
 

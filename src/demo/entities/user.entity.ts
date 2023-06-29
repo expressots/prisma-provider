@@ -1,6 +1,6 @@
 import { PrismaDefault, prismaField } from "../../prisma/decorators";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
-import { FunctionAttr } from "../../prisma/types";
+import { Function } from "../../prisma/types";
 import { ScalarType } from "../../prisma/types/scalar.types";
 import { PostgresAttr } from '../../prisma/types/typeAttributes/postgres-attr';
 import { Role } from "./role";
@@ -31,10 +31,10 @@ class User {
   @prismaField({ type: Role, isOptional: false })
   role!: Role;
 
-  @prismaField({ type: "Photo[]", isOptional: false })
-  photos!: Photo[];
+  //@prismaField({ type: "Photo[]", isOptional: false })
+  //photos!: Photo[];
 
-  @prismaField({ type: ScalarType.Decimal, attr: FunctionAttr.Decimal(10, 2) })
+  @prismaField({ type: ScalarType.Decimal, attr: Function.Decimal(10, 3) })
   money!: number;
   
   constructor(name: string, age: number) {
