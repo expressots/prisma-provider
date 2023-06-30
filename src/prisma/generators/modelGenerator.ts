@@ -31,7 +31,7 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
       let convertedType: string | undefined = undefined;
       let convertedName: string | undefined = undefined;
 
-      if (typeof type === 'object') {
+      if (typeof type === 'object' || typeof type === 'function') {       
         convertedName = classInfo?.properties.find(x => x.name === name)?.name;
         convertedType = classInfo?.properties.find(x => x.name === name)?.type;
       }

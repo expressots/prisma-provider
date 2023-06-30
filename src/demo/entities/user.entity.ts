@@ -2,6 +2,7 @@ import { Default, prismaField } from "../../prisma/decorators";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
 import { fn } from "../../prisma/types";
 import { ScalarType } from "../../prisma/types/scalar.types";
+import { Post } from "./post.entity";
 import { Role } from "./role";
 
 export enum Color {
@@ -24,14 +25,14 @@ class User {
   @prismaField()
   name!: string;
 
-  @prismaField({ isId: true, type: Color, isOptional: false })
+  @prismaField({ isId: true, type: Color, isUnique: true, isOptional: false })
   color!: Color;
 
-  @prismaField({ isId: true, type: Role, isOptional: false })
+  @prismaField({ isId: true, type: Role, isUnique: true, isOptional: false })
   role!: Role;
 
-  //@prismaField({ type: "Photo[]", isOptional: false })
-  //photos!: Photo[];
+  @prismaField({ type: Post, isOptional: false })
+  post?: Post[];
 
   @prismaField({ type: ScalarType.DateTime, attr: fn.CockroachDB.Time(1) })
   money!: number;
