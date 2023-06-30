@@ -226,10 +226,13 @@ async function readAllEntities(entitiesPath: string, schemaPath: string): Promis
 
     for (const match of classNameMatch) {
       const className = match[1];
-      
+
       try {
         const module = await import(path.resolve(file));
-        const entityClass = module.default || module[className];
+        const entityClass = module[className];
+        if(!entityClass) {
+          continue;
+        }
         await generatePrismaModel(entityClass, file, schemaPath);
       } catch (err) {
         console.error(`Error importing ${file}:`, err);
