@@ -101,11 +101,12 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
       const regex = new RegExp(regexPattern);
       // Realizar o replace do valor do campo
       updatedContent = updatedContent.replace(regex, (match) => {
-        return match.replace(new RegExp(`(${idFields[0]} [A-Za-z]*)`), `$1 @id`)});
+        return match.replace(new RegExp(`(${idFields[0]} [A-Za-z]*)`), `$1 @id`)
+      });
 
       // updatedContent = updatedContent.replace(
-        // new RegExp(`(${idFields[0]} [A-Za-z]*)`),
-        // `$1 @id`
+      // new RegExp(`(${idFields[0]} [A-Za-z]*)`),
+      // `$1 @id`
       // )
     }
 
@@ -120,11 +121,12 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
       const regex = new RegExp(regexPattern);
       // Realizar o replace do valor do campo
       updatedContent = updatedContent.replace(regex, (match) => {
-        return match.replace(new RegExp(`(${uniqueFields[0]} [A-Za-z]*)`), `$1 @unique`)});
+        return match.replace(new RegExp(`(${uniqueFields[0]} [A-Za-z]*)`), `$1 @unique`)
+      });
 
       // updatedContent = updatedContent.replace(
-        // new RegExp(`(${uniqueFields[0]} [A-Za-z]*)`),
-        // `$1 @unique`
+      // new RegExp(`(${uniqueFields[0]} [A-Za-z]*)`),
+      // `$1 @unique`
       // )
     }
 
@@ -214,21 +216,24 @@ async function readAllEntities(entitiesPath: string, schemaPath: string): Promis
   for (const file of files) {
     // TODO: check when file have two classes
     const fileContent = fs.readFileSync(file, "utf-8");
-    const classNameMatch = fileContent.match(/class\s+(\w+)/);
+    const regex = new RegExp('class\\s+(\\w+)', 'g');
+    const classNameMatch = [...fileContent.matchAll(regex)];
 
     if (!classNameMatch) {
-      console.error(`Could not find class declaration in ${file}`);
+      console.error(`Could not find classes declaration in ${file}`);
       continue;
     }
 
-    const className = classNameMatch[1];
-
-    try {
-      const module = await import(path.resolve(file));
-      const entityClass = module.default || module[className];
-      await generatePrismaModel(entityClass, file, schemaPath);
-    } catch (err) {
-      console.error(`Error importing ${file}:`, err);
+    for (const match of classNameMatch) {
+      const className = match[1];
+      
+      try {
+        const module = await import(path.resolve(file));
+        const entityClass = module.default || module[className];
+        await generatePrismaModel(entityClass, file, schemaPath);
+      } catch (err) {
+        console.error(`Error importing ${file}:`, err);
+      }
     }
   }
 }

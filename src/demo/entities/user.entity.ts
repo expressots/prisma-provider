@@ -41,27 +41,33 @@ class User {
   }
 }
 
-// @prismaModel()
-// class UserTeste {
-//   @prismaField({ isId: true, prismaDefault: PrismaDefault.Uuid, mapField: "_id"})  
-//   id!: string;
+@prismaModel()
+export class User2 {
+  @prismaField({ isId: true, prismaDefault: PrismaDefault.Uuid, mapField: "_id"})
+  id!: string;
+}
 
-//   @prismaField()
-//   name!: string;
+@prismaModel()
+export default class UserTeste {
+  @prismaField({ isId: true, prismaDefault: PrismaDefault.Uuid, mapField: "_id"})  
+  id!: string;
 
-//   @prismaField({ type: Color, isOptional: false })
-//   color!: Color[];
+  @prismaField()
+  name!: string;
 
-//   @prismaField({ type: Role, isOptional: false })
-//   role!: Role;
+  @prismaField({ type: Color, isOptional: false })
+  color!: Color[];
 
-//   //@prismaField({ type: "Photo[]", isOptional: false })
-//   //photos!: Photo[];
+  @prismaField({ type: Role, isOptional: false })
+  role!: Role;
 
-//   @prismaField({ type: ScalarType.Decimal, attr: Function.Decimal(10, 3) })
-//   money!: number;
+  //@prismaField({ type: "Photo[]", isOptional: false })
+  //photos!: Photo[];
+
+  @prismaField({ type: ScalarType.Decimal, attr: Function.Decimal(10, 3) })
+  money!: number;
   
-//   constructor(name: string, age: number) {
-//   }
-// }
-export { User };
+  constructor(name: string, age: number) {
+  }
+}
+export { User as UserTeste2 };

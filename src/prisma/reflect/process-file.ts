@@ -40,7 +40,7 @@ export function processFile(fileModule: FileModule): FileInfo[] {
           fileInfo.imports?.push(importPath);
         }
         //console.log('-------------------');
-        // get all exports
+        // TODO: get all exports
         if (ts.isExportDeclaration(node)) {
           const exportPath = node.moduleSpecifier?.getText(sourceFile);
           const exportName = node.exportClause?.getText(sourceFile);

@@ -10,26 +10,30 @@ datasource db {
   url      = ""
 }
 
+
+
+model User {
+  id String @id @default(uuid()) @map("_id")
+  name String
+  color Color[]
+  role Role
+  money Decimal @db.Decimal(10, 3)
+}
+
 enum Color {
   RED
   GREEN
   BLUE
 }
 
-model Post {
-  id   String @id @default(uuid()) @map("_id")
-  name String
-  role Role
-}
-
 enum Role {
   ADMIN
 }
 
-model User {
-  id    String  @id @default(uuid()) @map("_id")
-  name  String
+model UserTeste {
+  id String @id @default(uuid()) @map("_id")
+  name String
   color Color[]
-  role  Role
+  role Role
   money Decimal @db.Decimal(10, 3)
 }
