@@ -1,8 +1,7 @@
 import { PrismaDefault, prismaField } from "../../prisma/decorators";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
-import { Function } from "../../prisma/types";
+import { fn } from "../../prisma/types";
 import { ScalarType } from "../../prisma/types/scalar.types";
-import { PostgresAttr } from '../../prisma/types/typeAttributes/postgres-attr';
 import { Role } from "./role";
 
 export enum Color {
@@ -25,49 +24,21 @@ class User {
   @prismaField()
   name!: string;
 
-  @prismaField({ type: Color, isOptional: false })
-  color!: Color[];
+  @prismaField({ isId: true, type: Color, isOptional: false })
+  color!: Color;
 
-  @prismaField({ type: Role, isOptional: false })
+  @prismaField({ isId: true, type: Role, isOptional: false })
   role!: Role;
 
   //@prismaField({ type: "Photo[]", isOptional: false })
   //photos!: Photo[];
 
-  @prismaField({ type: ScalarType.Decimal, attr: Function.Decimal(10, 3) })
+  @prismaField({ type: ScalarType.DateTime, attr: fn.CockroachDB.Time(1) })
   money!: number;
-  
+
   constructor(name: string, age: number) {
   }
 }
 
-@prismaModel()
-export class User2 {
-  @prismaField({ isId: true, prismaDefault: PrismaDefault.Uuid, mapField: "_id"})
-  id!: string;
-}
+export { User };
 
-@prismaModel()
-export default class UserTeste {
-  @prismaField({ isId: true, prismaDefault: PrismaDefault.Uuid, mapField: "_id"})  
-  id!: string;
-
-  @prismaField()
-  name!: string;
-
-  @prismaField({ type: Color, isOptional: false })
-  color!: Color[];
-
-  @prismaField({ type: Role, isOptional: false })
-  role!: Role;
-
-  //@prismaField({ type: "Photo[]", isOptional: false })
-  //photos!: Photo[];
-
-  @prismaField({ type: ScalarType.Decimal, attr: Function.Decimal(10, 3) })
-  money!: number;
-  
-  constructor(name: string, age: number) {
-  }
-}
-export { User as UserTeste2 };

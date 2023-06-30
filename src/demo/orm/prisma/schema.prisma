@@ -6,18 +6,18 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
   url      = ""
 }
 
-
-
 model User {
-  id String @id @default(uuid()) @map("_id")
-  name String
-  color Color[]
-  role Role
-  money Decimal @db.Decimal(10, 3)
+  id    String   @default(uuid()) @map("_id")
+  name  String
+  color Color
+  role  Role
+  money DateTime @db.Time(1)
+
+  @@id([id, color, role])
 }
 
 enum Color {
@@ -31,9 +31,9 @@ enum Role {
 }
 
 model UserTeste {
-  id String @id @default(uuid()) @map("_id")
-  name String
+  id    String  @id @default(uuid()) @map("_id")
+  name  String
   color Color[]
-  role Role
+  role  Role
   money Decimal @db.Decimal(10, 3)
 }

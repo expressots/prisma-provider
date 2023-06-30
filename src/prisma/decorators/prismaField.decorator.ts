@@ -1,4 +1,4 @@
-import { Function } from './../types/typeAttributes/attr-function';
+import { fn } from './../types/typeAttributes/attr-function';
 import "reflect-metadata";
 import { MongoAttrType } from './../types/typeAttributes/mongo-attr';
 import { ScalarType } from "../types/scalar.types";
@@ -18,8 +18,13 @@ export enum PrismaDefault {
 }
 
 export interface IPrismaFieldOptions<T = any> {
-  type?: ScalarType | Object | string; // TODO: type needs to accept user created types
-  attr?: PostgresAttrType | MySQLAttrType | MongoAttrType | MssqlAttrType | CockroachDBAttrType | typeof Function | string;
+  type?: ScalarType | Object | string;
+  attr?: PostgresAttrType 
+  | MySQLAttrType 
+  | MongoAttrType 
+  | MssqlAttrType 
+  | CockroachDBAttrType 
+  | typeof fn | string; // 100%
   isId?: boolean; // 100%
   isOptional?: boolean; // 100%
   isUnique?: boolean; // 100%
