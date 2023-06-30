@@ -1,4 +1,4 @@
-import { PrismaDefault, prismaField } from "../../prisma/decorators";
+import { Default, prismaField } from "../../prisma/decorators";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
 import { fn } from "../../prisma/types";
 import { ScalarType } from "../../prisma/types/scalar.types";
@@ -18,7 +18,7 @@ type Photo = {
 
 @prismaModel()
 class User {
-  @prismaField({ isId: true, prismaDefault: PrismaDefault.Uuid, mapField: "_id"})  
+  @prismaField({ type: ScalarType.Int, isId: true, prismaDefault: Default.Value(1), mapField: "_id"})  
   id!: string;
 
   @prismaField()

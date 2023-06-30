@@ -62,7 +62,7 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
       }
 
       if (prismaDefault) {
-        fieldString += ` @default(${prismaDefault}())`;
+        fieldString += ` @default(${prismaDefault})`;
       }
 
       if (mapField) {

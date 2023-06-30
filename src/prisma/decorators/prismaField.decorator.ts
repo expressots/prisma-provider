@@ -7,14 +7,15 @@ import { MySQLAttrType } from "../types/typeAttributes/mysql-attr";
 import { MssqlAttrType } from "../types/typeAttributes/msql-attr";
 import { CockroachDBAttrType } from "../types/typeAttributes/cockroachDB-attr";
 
-export enum PrismaDefault {
-  Auto = "auto",
-  AutoIncrement = "autoincrement",
-  Sequence = "sequence",
-  Cuid = "cuid",
-  Uuid = "uuid",
-  Now = "now",
-  DBgenerated = "dbgenerated"
+export const Default = {
+  Auto: "auto()",
+  AutoIncrement: "autoincrement()",
+  Sequence: "sequence()",
+  Cuid: "cuid()",
+  Uuid: "uuid()",
+  Now: "now()",
+  DBgenerated: "dbgenerated()",
+  Value: (value: any) => typeof value === "string" ? `"${value}"` : value,
 }
 
 export interface IPrismaFieldOptions<T = any> {
@@ -28,7 +29,7 @@ export interface IPrismaFieldOptions<T = any> {
   isId?: boolean; // 100%
   isOptional?: boolean; // 100%
   isUnique?: boolean; // 100%
-  prismaDefault?: PrismaDefault; // 50% function - pending 50%: static value based on type
+  prismaDefault?: typeof Default | string; // 100%
   mapField?: string; // 100%
   name?: string; // 100%
 }
@@ -51,7 +52,6 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
       mapField: options.mapField || undefined,
     }
 
-    //console.log(field);
     fields.push(field);
     Reflect.defineMetadata("prisma:fields", fields, target.constructor);
   };

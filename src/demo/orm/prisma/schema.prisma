@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id    String   @default(uuid()) @map("_id")
+  id    Int      @default(1) @map("_id")
   name  String
   color Color
   role  Role
