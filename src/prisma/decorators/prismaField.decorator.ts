@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { fn } from './../types/typeAttributes/attr-function';
 import { MongoAttrType } from './../types/typeAttributes/mongo-attr';
 import { ScalarType } from "../types/scalar.types";

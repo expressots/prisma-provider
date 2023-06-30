@@ -1,5 +1,6 @@
 import { Default, prismaField } from "../../prisma/decorators";
 import { prismaModel } from "../../prisma/decorators/prismaModel.decorator";
+import { prismaRelation } from "../../prisma/decorators/prismaRelation.decorator";
 import { fn } from "../../prisma/types";
 import { ScalarType } from "../../prisma/types/scalar.types";
 import { Post } from "./post.entity";
@@ -27,11 +28,12 @@ class User {
 
   @prismaField({ isId: true, type: Color, isUnique: true, isOptional: false })
   color!: Color;
-
+  
   @prismaField({ isId: true, type: Role, isUnique: true, isOptional: false })
   role!: Role;
-
+  
   @prismaField({ type: Post, isOptional: false })
+  @prismaRelation({ fields: ["authoId"], references: ["id"] })
   post?: Post[];
 
   @prismaField({ type: ScalarType.DateTime, attr: fn.CockroachDB.Time(1) })
