@@ -6,3 +6,6 @@ lib
 
 # Files created by Visual Studio Code
 .vscode
+
+# Remove demo files
+demo
