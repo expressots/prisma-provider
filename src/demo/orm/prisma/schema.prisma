@@ -6,16 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "postgresql"
   url      = ""
-}
-
-// [Types]
-
-// [Enums]
-
-enum Role {
-  ADMIN
 }
 
 enum Color {
@@ -24,13 +16,20 @@ enum Color {
   BLUE
 }
 
-// [Models]
-
-model User {
-  id String @id @default(uuid()) @map("_id")
+model Post {
+  id   String @id @default(uuid()) @map("_id")
   name String
-  color Color[]
   role Role
-  money Decimal @db.Decimal(10, 3)
 }
 
+enum Role {
+  ADMIN
+}
+
+model User {
+  id    String  @id @default(uuid()) @map("_id")
+  name  String
+  color Color[]
+  role  Role
+  money Decimal @db.Decimal(10, 3)
+}
