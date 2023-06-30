@@ -25,13 +25,13 @@ export interface IPrismaFieldOptions<T = any> {
   | MongoAttrType 
   | MssqlAttrType 
   | CockroachDBAttrType 
-  | typeof fn | string; // 100%
-  isId?: boolean; // 100%
-  isOptional?: boolean; // 100%
-  isUnique?: boolean; // 100%
-  prismaDefault?: typeof Default | string; // 100%
-  mapField?: string; // 100%
-  name?: string; // 100%
+  | typeof fn | string;
+  isId?: boolean;
+  isOptional?: boolean;
+  isUnique?: boolean;
+  prismaDefault?: typeof Default | string;
+  mapField?: string;
+  name?: string;
 }
 
 export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): PropertyDecorator {
