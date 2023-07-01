@@ -153,10 +153,7 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
                 if (type) mapping.push(type);
 
                 const indexGrouping = mapping.join(", ");
-                updatedContent = updatedContent.replace(
-                    modelRegex,
-                    `$1\n  @@index(${indexGrouping})\n`,
-                );
+                updatedContent = updatedContent.replace(modelRegex, `$1\n  @@index(${indexGrouping})\n`);
             }
         }
 
@@ -208,11 +205,7 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
     }
 }
 
-async function readAllEntities(
-    entitiesPath: string,
-    schemaPath: string,
-    entityNamePattern: string,
-): Promise<void> {
+async function readAllEntities(entitiesPath: string, schemaPath: string, entityNamePattern: string): Promise<void> {
     const files = glob.sync(`${entitiesPath}/**/*.${entityNamePattern}.ts`);
 
     if (!files || files.length === 0) {
@@ -261,11 +254,7 @@ async function codeFirstGen(): Promise<void> {
     const PROJECT_ROOT = `${process.cwd()}\\${sourceRoot}`;
 
     if (providers?.Prisma) {
-        const schemaPath = path.join(
-            PROJECT_ROOT,
-            providers?.Prisma.schemaPath,
-            providers.Prisma.schemaName,
-        );
+        const schemaPath = path.join(PROJECT_ROOT, providers?.Prisma.schemaPath, providers.Prisma.schemaName);
         const entitiesPath = path.join(PROJECT_ROOT, providers.Prisma.entitiesPath);
         const entityNamePattern = opinionated ? "entity" : providers.Prisma.entityNamePattern;
 
