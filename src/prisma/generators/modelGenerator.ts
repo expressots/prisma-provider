@@ -206,46 +206,47 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
 }
 
 async function readAllEntities(entitiesPath: string, schemaPath: string, entityNamePattern: string): Promise<void> {
-    const files = glob.sync(`${entitiesPath}/**/*.${entityNamePattern}.ts`);
+  const files = glob.sync(`${entitiesPath}/**/*.${entityNamePattern}.ts`);
 
-    if (!files || files.length === 0) {
-        printError("No entity files found!", `Files: ${files ? files : "[]"}`);
-        printReason([
+  if (!files || files.length === 0) {
+      printError("No entity files found!", `Files: ${files ? files : "[]"}`);
+      printReason([
             `There is no files in the informed path: \n[${entitiesPath}]`,
             `Check expressots.config.ts if the entityNamePattern: [${entityNamePattern}] is how you are creating` +
                 `\n your entities files. Example: user.${entityNamePattern}.ts`,
-            `Check if your package.json is pointing to the correct schema path: \n[${schemaPath}]`,
-        ]);
-        process.exit(1);
-    }
+          `Check if your package.json is pointing to the correct schema path: \n[${schemaPath}]`,
+      ]);
+      process.exit(1);
+  }
 
-    // Process file by file
-    for (const file of files) {
-        const fileContent = fs.readFileSync(file, "utf-8");
-        const classRegex = new RegExp("class\\s+(\\w+)", "g");
-        const classNameMatch = [...fileContent.matchAll(classRegex)];
+  // Process file by file
+  for (const file of files) {
+      const fileContent = fs.readFileSync(file, "utf-8");
+      // Regex to find class declarations in the file that are not commented
+      const classRegex = new RegExp("(?<!\\/\\/.*\\n)class\\s+(\\w+)", "g");
+      const classNameMatch = [...fileContent.matchAll(classRegex)];
 
-        if (classNameMatch.length == 0) {
-            printError("Could not find classes declaration in the file", `${file}`);
-            continue;
-        }
+      if (classNameMatch.length === 0) {
+          printError("Could not find class declarations in the file", `${file}`);
+          continue;
+      }
 
-        for (const match of classNameMatch) {
-            const className = match[1];
+      for (const match of classNameMatch) {
+          const className = match[1];
 
-            try {
-                const module = await import(path.resolve(file));
-                const entityClass = module[className];
+          try {
+              const module = await import(path.resolve(file));
+              const entityClass = module[className];
 
-                if (!entityClass) {
-                    continue;
-                }
-                await generatePrismaModel(entityClass, file, schemaPath);
-            } catch (err) {
-                printError("Error extracting entity module", `${err}`);
-            }
-        }
-    }
+              if (!entityClass) {
+                  continue;
+              }
+              await generatePrismaModel(entityClass, file, schemaPath);
+          } catch (err) {
+              printError("Error extracting entity module", `${err}`);
+          }
+      }
+  }
 }
 
 async function codeFirstGen(): Promise<void> {
