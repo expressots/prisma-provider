@@ -5,15 +5,14 @@ import { FileInfo } from "../file-info";
 export type EnumInfo = {
     name: string;
     values: { [key: string]: number };
-}
+};
 
 export class EnumExtractor {
-
     //extracts all enums from all files
     public static enums(fileInfo: FileInfo[]): EnumInfo[] {
         const enums: EnumInfo[] = [];
-        fileInfo.forEach(file => {
-            file.enums.forEach(enm => {
+        fileInfo.forEach((file) => {
+            file.enums.forEach((enm) => {
                 enums.push(enm);
             });
         });
@@ -22,7 +21,6 @@ export class EnumExtractor {
     }
 
     public static byName(enums: EnumInfo[], enumName: string): EnumInfo | undefined {
-        return enums.find(enm => enm.name === enumName);
+        return enums.find((enm) => enm.name === enumName);
     }
 }
- 

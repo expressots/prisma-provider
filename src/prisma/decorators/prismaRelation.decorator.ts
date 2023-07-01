@@ -10,15 +10,18 @@ export function prismaRelation(options: IPrismaRelationOptions): PropertyDecorat
         if (!Reflect.hasMetadata("prisma:relations", target.constructor)) {
             Reflect.defineMetadata("prisma:relations", [], target.constructor);
         }
-    
-        const relations = Reflect.getMetadata("prisma:relations", target.constructor) as IPrismaRelationOptions[];
+
+        const relations = Reflect.getMetadata(
+            "prisma:relations",
+            target.constructor,
+        ) as IPrismaRelationOptions[];
         const relation: IPrismaRelationOptions = {
             name: propertyKey.toString(),
             relatedEntity: options.relatedEntity || undefined,
             fields: options.fields,
-            references: options.references
-        }
-        
+            references: options.references,
+        };
+
         relations.push(relation);
         console.log(relations);
         Reflect.defineMetadata("prisma:relations", relations, target.constructor);

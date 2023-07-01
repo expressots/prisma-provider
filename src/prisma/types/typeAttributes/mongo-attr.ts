@@ -1,20 +1,25 @@
 enum StringAttrMongo {
-    String = "@db.String",	
-    ObjectID = "@db.ObjectId"
+    String = "@db.String",
+    ObjectID = "@db.ObjectId",
 }
 
 enum IntAttrMongo {
     Int = "@db.String",
-    Long = "@db.Long"
+    Long = "@db.Long",
 }
 
 enum BigIntAttrMongo {
-    bigint = "@db.BigInt"
+    bigint = "@db.BigInt",
 }
 
 enum BytesAttrMongo {
-    BinData = "@db.BinData"
+    BinData = "@db.BinData",
 }
 
 export type MongoAttrType = StringAttrMongo | IntAttrMongo | BigIntAttrMongo | BytesAttrMongo;
-export const MongoAttr = { ...StringAttrMongo, ...IntAttrMongo, ...BigIntAttrMongo, ...BytesAttrMongo };
+export const MongoAttr = {
+    ...StringAttrMongo,
+    ...IntAttrMongo,
+    ...BigIntAttrMongo,
+    ...BytesAttrMongo,
+};

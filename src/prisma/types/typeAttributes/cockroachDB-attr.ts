@@ -5,11 +5,11 @@ enum StringAttributesCockroachDB {
     Bit = "@db.Bit(x)",
     VarBit = "@db.VarBit",
     Uuid = "@db.Uuid",
-    Inet = "@db.Inet"
+    Inet = "@db.Inet",
 }
 
 enum BooleanAttributesCockroachDB {
-    Bool = "@db.Bool"
+    Bool = "@db.Bool",
 }
 
 enum IntAttributesCockroachDB {
@@ -47,5 +47,24 @@ enum BytesAttibutesCockroachDB {
     Bytes = "@db.Bytes",
 }
 
-export type CockroachDBAttrType = StringAttributesCockroachDB | BooleanAttributesCockroachDB | IntAttributesCockroachDB | BigIntAttributesCockroachDB | FloatAttributesCockroachDB | DecimalAttributesCockroachDB | DateTimeAttributesCockroachDB | JsonAttributesCockroachDB | BytesAttibutesCockroachDB;
-export const CockroachDBAttr = { ...StringAttributesCockroachDB, ...BooleanAttributesCockroachDB, ...IntAttributesCockroachDB, ...BigIntAttributesCockroachDB, ...FloatAttributesCockroachDB, ...DecimalAttributesCockroachDB, ...DateTimeAttributesCockroachDB, ...JsonAttributesCockroachDB, ...BytesAttibutesCockroachDB };
+export type CockroachDBAttrType =
+    | StringAttributesCockroachDB
+    | BooleanAttributesCockroachDB
+    | IntAttributesCockroachDB
+    | BigIntAttributesCockroachDB
+    | FloatAttributesCockroachDB
+    | DecimalAttributesCockroachDB
+    | DateTimeAttributesCockroachDB
+    | JsonAttributesCockroachDB
+    | BytesAttibutesCockroachDB;
+export const CockroachDBAttr = {
+    ...StringAttributesCockroachDB,
+    ...BooleanAttributesCockroachDB,
+    ...IntAttributesCockroachDB,
+    ...BigIntAttributesCockroachDB,
+    ...FloatAttributesCockroachDB,
+    ...DecimalAttributesCockroachDB,
+    ...DateTimeAttributesCockroachDB,
+    ...JsonAttributesCockroachDB,
+    ...BytesAttibutesCockroachDB,
+};

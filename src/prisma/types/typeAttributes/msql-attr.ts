@@ -7,7 +7,7 @@ enum MssqlTypesAttribute {
     NText = "@db.NText",
     Xml = "@db.Xml",
     UniqueIdentifier = "@db.UniqueIdentifier",
-    Bit = "@db.Bit"
+    Bit = "@db.Bit",
 }
 
 enum StringAttributesMsql {
@@ -21,7 +21,7 @@ enum StringAttributesMsql {
     Uniqueidentifier = "@db.UniqueIdentifie",
 }
 enum BooleanAttributesMsql {
-    Bit = "@db.Bit"
+    Bit = "@db.Bit",
 }
 
 enum IntAttributesMsql {
@@ -65,5 +65,26 @@ enum BytesAttributesMsql {
     Image = "@db.Image",
 }
 
-export type MssqlAttrType = MssqlTypesAttribute | StringAttributesMsql | BooleanAttributesMsql | IntAttributesMsql | BigIntAttributesMsql | FloatAttributesMsql | DecimalAttributesMsql | DateTimeAttributesMsql | JsonAttributesMsql | BytesAttributesMsql;
-export const MssqlAttr = { ...MssqlTypesAttribute, ...StringAttributesMsql, ...BooleanAttributesMsql, ...IntAttributesMsql, ...BigIntAttributesMsql, ...FloatAttributesMsql, ...DecimalAttributesMsql, ...DateTimeAttributesMsql, ...JsonAttributesMsql, ...BytesAttributesMsql };
+export type MssqlAttrType =
+    | MssqlTypesAttribute
+    | StringAttributesMsql
+    | BooleanAttributesMsql
+    | IntAttributesMsql
+    | BigIntAttributesMsql
+    | FloatAttributesMsql
+    | DecimalAttributesMsql
+    | DateTimeAttributesMsql
+    | JsonAttributesMsql
+    | BytesAttributesMsql;
+export const MssqlAttr = {
+    ...MssqlTypesAttribute,
+    ...StringAttributesMsql,
+    ...BooleanAttributesMsql,
+    ...IntAttributesMsql,
+    ...BigIntAttributesMsql,
+    ...FloatAttributesMsql,
+    ...DecimalAttributesMsql,
+    ...DateTimeAttributesMsql,
+    ...JsonAttributesMsql,
+    ...BytesAttributesMsql,
+};

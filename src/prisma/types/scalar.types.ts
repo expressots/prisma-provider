@@ -8,9 +8,20 @@ const enum ScalarType {
     DateTime = "DateTime",
     Json = "Json",
     Bytes = "Bytes",
-    Enum = "Enum"
+    Enum = "Enum",
 }
 
-const ScalarTypeMap: String[] = ["String", "Boolean", "Int", "BigInt", "Float", "Decimal", "DateTime", "Json", "Bytes", "Enum"]
+const ScalarTypeMap: String[] = [
+    "String",
+    "Boolean",
+    "Int",
+    "BigInt",
+    "Float",
+    "Decimal",
+    "DateTime",
+    "Json",
+    "Bytes",
+    "Enum",
+];
 
-export { ScalarType, ScalarTypeMap }
+export { ScalarType, ScalarTypeMap };

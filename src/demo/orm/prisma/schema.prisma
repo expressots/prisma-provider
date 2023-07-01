@@ -6,36 +6,11 @@ generator client {
 }
 
 datasource db {
-  provider = "cockroachdb"
+  provider = "postgresql"
   url      = ""
 }
 
-
-model Post {
-  id String @id
-  title String
-  content String
-}
-
 model User {
-  id Int @default(1) @map("_id")
+  id   Int    @id
   name String
-  color Color
-  role Role
-  post Post[]
-  money DateTime @db.Time(1)
-
-  @@id([id, color, role])
-
-  @@unique([color, role])
-}
-
-enum Color {
-  RED
-  GREEN
-  BLUE
-}
-
-enum Role {
-  ADMIN
 }

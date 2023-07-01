@@ -7,32 +7,45 @@ enum StringAttrPostgres {
     Uuid = "@db.Uuid",
     Xml = "@db.Xml",
     Inet = "@db.Inet",
-    Citext = "@db.Citext"
+    Citext = "@db.Citext",
 }
 
 enum IntAttrPostgres {
     SmallInt = "@db.SmallInt",
-    Oid = "@db.Oid"
+    Oid = "@db.Oid",
 }
 
 enum FloatAttrPostgres {
-    Real = "@db.Real"
+    Real = "@db.Real",
 }
 
 enum DecimalAttrPostgres {
-    Money = "@db.Money"
+    Money = "@db.Money",
 }
 
 enum DateTimeAttrPostgres {
     Timestamptz = "@db.Timestamptz(x)",
     Date = "@db.Date",
     Time = "@db.Time(x)",
-    TimeTZ = "@db.Timetz(x)"
+    TimeTZ = "@db.Timetz(x)",
 }
 
 enum JsonAttrPostgres {
-    Json = "@db.Json"
+    Json = "@db.Json",
 }
 
-export type PostgresAttrType = StringAttrPostgres | IntAttrPostgres | FloatAttrPostgres | DecimalAttrPostgres | DateTimeAttrPostgres | JsonAttrPostgres;
-export const PostgresAttr = { ...StringAttrPostgres, ...IntAttrPostgres, ...FloatAttrPostgres, ...DecimalAttrPostgres, ...DateTimeAttrPostgres, ...JsonAttrPostgres };
+export type PostgresAttrType =
+    | StringAttrPostgres
+    | IntAttrPostgres
+    | FloatAttrPostgres
+    | DecimalAttrPostgres
+    | DateTimeAttrPostgres
+    | JsonAttrPostgres;
+export const PostgresAttr = {
+    ...StringAttrPostgres,
+    ...IntAttrPostgres,
+    ...FloatAttrPostgres,
+    ...DecimalAttrPostgres,
+    ...DateTimeAttrPostgres,
+    ...JsonAttrPostgres,
+};
