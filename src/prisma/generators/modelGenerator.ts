@@ -153,40 +153,50 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
                 if (type) mapping.push(type);
 
                 const indexGrouping = mapping.join(", ");
-                updatedContent = updatedContent.replace(modelRegex, `$1\n  @@index(${indexGrouping})\n`);
+                updatedContent = updatedContent.replace(
+                    modelRegex,
+                    `$1\n  @@index(${indexGrouping})\n`,
+                );
             }
         }
 
         // Collect the depending types
-        classInfo?.properties.forEach((property) => {
-            if (property.pathDeclaration && property.pathDeclaration !== "") {
-                const type = property.type.replace(/[\[\]?!]/g, "");
-                const value = typeSearcher(type, property.pathDeclaration);
-                if (value) {
-                    if (value?.includes("enum")) {
-                        const enumRegex = new RegExp(value, "g");
-                        const enumExists = enumRegex.test(schemaContent);
-                        if (enumExists) {
-                            updatedContent = updatedContent.replace(enumRegex, value);
+        if (classInfo) {
+            for (const property of classInfo?.properties) {
+                if (property.pathDeclaration && property.pathDeclaration !== "") {
+                    const type = property.type.replace(/[\[\]?!]/g, "");
+                    const field = fields.find((field) => field.name === property.name);
+                    // if property is not a prisma field, skip
+                    if (!field) {
+                        continue;
+                    }
+                    const value = typeSearcher(type, property.pathDeclaration);
+                    if (value) {
+                        if (value?.includes("enum")) {
+                            const enumRegex = new RegExp(value, "g");
+                            const enumExists = enumRegex.test(schemaContent);
+                            if (enumExists) {
+                                updatedContent = updatedContent.replace(enumRegex, value);
+                            } else {
+                                // REVIEW: See if we are going to use the [Enums] or not
+                                // updatedContent = updatedContent.replace("// [Enums]", `// [Enums]\n\n${value}`);
+                                updatedContent = `${updatedContent}\n\n${value}`;
+                            }
                         } else {
-                            // REVIEW: See if we are going to use the [Enums] or not
-                            // updatedContent = updatedContent.replace("// [Enums]", `// [Enums]\n\n${value}`);
-                            updatedContent = `${updatedContent}\n\n${value}`;
-                        }
-                    } else {
-                        const typeRegex = new RegExp(value, "g");
-                        const typeExists = typeRegex.test(schemaContent);
-                        if (typeExists) {
-                            updatedContent = updatedContent.replace(typeRegex, value);
-                        } else {
-                            // REVIEW: See if we are going to use the [Types] or not
-                            // updatedContent = updatedContent.replace("// [Types]", `// [Types]\n\n${value}`);
-                            updatedContent = `${updatedContent}\n\n${value}`;
+                            const typeRegex = new RegExp(value, "g");
+                            const typeExists = typeRegex.test(schemaContent);
+                            if (typeExists) {
+                                updatedContent = updatedContent.replace(typeRegex, value);
+                            } else {
+                                // REVIEW: See if we are going to use the [Types] or not
+                                // updatedContent = updatedContent.replace("// [Types]", `// [Types]\n\n${value}`);
+                                updatedContent = `${updatedContent}\n\n${value}`;
+                            }
                         }
                     }
                 }
             }
-        });
+        }
 
         fs.writeFileSync(schemaPath, updatedContent);
         // remove model if not decorated
@@ -205,48 +215,53 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
     }
 }
 
-async function readAllEntities(entitiesPath: string, schemaPath: string, entityNamePattern: string): Promise<void> {
-  const files = glob.sync(`${entitiesPath}/**/*.${entityNamePattern}.ts`);
+async function readAllEntities(
+    entitiesPath: string,
+    schemaPath: string,
+    entityNamePattern: string,
+): Promise<void> {
+    const files = glob.sync(`${entitiesPath}/**/*.${entityNamePattern}.ts`);
 
-  if (!files || files.length === 0) {
-      printError("No entity files found!", `Files: ${files ? files : "[]"}`);
-      printReason([
+    if (!files || files.length === 0) {
+        printError("No entity files found!", `Files: ${files ? files : "[]"}`);
+        printReason([
             `There is no files in the informed path: \n[${entitiesPath}]`,
             `Check expressots.config.ts if the entityNamePattern: [${entityNamePattern}] is how you are creating` +
                 `\n your entities files. Example: user.${entityNamePattern}.ts`,
-          `Check if your package.json is pointing to the correct schema path: \n[${schemaPath}]`,
-      ]);
-      process.exit(1);
-  }
+            `Check if your package.json is pointing to the correct schema path: \n[${schemaPath}]`,
+        ]);
+        process.exit(1);
+    }
 
-  // Process file by file
-  for (const file of files) {
-      const fileContent = fs.readFileSync(file, "utf-8");
-      // Regex to find class declarations in the file that are not commented
-      const classRegex = new RegExp("(?<!\\/\\/.*\\n)class\\s+(\\w+)", "g");
-      const classNameMatch = [...fileContent.matchAll(classRegex)];
+    const generatePromises = files.map(async (file) => {
+        const fileContent = fs.readFileSync(file, "utf-8");
+        const classRegex = new RegExp("(?<!\\/\\/.*\\n)class\\s+(\\w+)", "g");
+        const classNameMatch = [...fileContent.matchAll(classRegex)];
 
-      if (classNameMatch.length === 0) {
-          printError("Could not find class declarations in the file", `${file}`);
-          continue;
-      }
+        if (classNameMatch.length === 0) {
+            printError("Could not find class declarations in the file", `${file}`);
+            return;
+        }
 
-      for (const match of classNameMatch) {
-          const className = match[1];
+        for (const match of classNameMatch) {
+            const className = match[1];
 
-          try {
-              const module = await import(path.resolve(file));
-              const entityClass = module[className];
+            try {
+                const module = await import(path.resolve(file));
+                const entityClass = module[className];
 
-              if (!entityClass) {
-                  continue;
-              }
-              await generatePrismaModel(entityClass, file, schemaPath);
-          } catch (err) {
-              printError("Error extracting entity module", `${err}`);
-          }
-      }
-  }
+                if (!entityClass) {
+                    continue;
+                }
+
+                await generatePrismaModel(entityClass, file, schemaPath);
+            } catch (err) {
+                printError("Error extracting entity module", `${err}`);
+            }
+        }
+    });
+
+    await Promise.all(generatePromises);
 }
 
 async function codeFirstGen(): Promise<void> {
