@@ -76,6 +76,14 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
 
         const schemaContent = fs.readFileSync(schemaPath, "utf-8");
 
+        // REVIEW: see if is better form to get the provider
+        const regex = /datasource\s+db\s+{\s+provider\s*=\s*"(.+)"\s+url\s*=\s*".*"\s+}/;
+        const matcheProvider = schemaContent.match(regex);
+        let providerValue = "";
+        if (matcheProvider) {
+            providerValue = matcheProvider[1];
+        }
+
         const modelRegex = new RegExp(`(model ${className} {[^}]*})`, "g");
         const modelExists = modelRegex.test(schemaContent);
 
@@ -161,6 +169,9 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
         }
 
         // Collect the depending types
+        const providersNotSuportEnum = ["sqlserver", "sqlite"];
+        const providersSuportTypes = ["mongodb"];
+
         if (classInfo) {
             for (const property of classInfo?.properties) {
                 if (property.pathDeclaration && property.pathDeclaration !== "") {
@@ -173,6 +184,10 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
                     const value = typeSearcher(type, property.pathDeclaration);
                     if (value) {
                         if (value?.includes("enum")) {
+                            if (providersNotSuportEnum.includes(providerValue)) {
+                                printError(`The Provider ${providerValue} not suport enums`, type);
+                                continue;
+                            }
                             const enumRegex = new RegExp(value, "g");
                             const enumExists = enumRegex.test(schemaContent);
                             if (enumExists) {
@@ -182,7 +197,11 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
                                 // updatedContent = updatedContent.replace("// [Enums]", `// [Enums]\n\n${value}`);
                                 updatedContent = `${updatedContent}\n\n${value}`;
                             }
-                        } else {
+                        } else if (value?.includes("type")) {
+                            if (!providersSuportTypes.includes(providerValue)) {
+                                printError(`The Provider ${providerValue} not suport types`, type);
+                                continue;
+                            }
                             const typeRegex = new RegExp(value, "g");
                             const typeExists = typeRegex.test(schemaContent);
                             if (typeExists) {
@@ -270,7 +289,11 @@ async function codeFirstGen(): Promise<void> {
     const PROJECT_ROOT = `${process.cwd()}\\${sourceRoot}`;
 
     if (providers?.Prisma) {
-        const schemaPath = path.join(PROJECT_ROOT, providers?.Prisma.schemaPath, providers.Prisma.schemaName);
+        const schemaPath = path.join(
+            PROJECT_ROOT,
+            providers?.Prisma.schemaPath,
+            providers.Prisma.schemaName,
+        );
         const entitiesPath = path.join(PROJECT_ROOT, providers.Prisma.entitiesPath);
         const entityNamePattern = opinionated ? "entity" : providers.Prisma.entityNamePattern;
 
@@ -279,6 +302,7 @@ async function codeFirstGen(): Promise<void> {
     }
 
     // Prisma tasks
+    // Review: check when one of the processes gives an error when executing the other does not execute
     await execProcess({
         commandArg: "npx",
         args: ["prisma", "validate"],
