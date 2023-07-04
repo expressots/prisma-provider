@@ -1,6 +1,9 @@
 import { type } from "../types/scalar.types";
 import { db } from "../types/db-type-specific";
 
+/**
+ * Available default options for Prisma fields
+ */
 export const Default = {
     Auto: "auto()",
     AutoIncrement: "autoincrement()",
@@ -9,9 +12,17 @@ export const Default = {
     Uuid: "uuid()",
     Now: "now()",
     DBgenerated: "dbgenerated()",
+    /**
+     * Function to set a default value for a Prisma field.
+     * If the value is a string, it will be wrapped in quotes.
+     * @param {any} value - the default value for the field
+     */
     Value: (value: any) => (typeof value === "string" ? `"${value}"` : value),
 };
 
+/**
+ * Interface for options that can be passed to a Prisma field.
+ */
 export interface IPrismaFieldOptions<T = any> {
     type?: type | object | string;
     attr?: typeof db | string;
@@ -23,6 +34,10 @@ export interface IPrismaFieldOptions<T = any> {
     name?: string;
 }
 
+/**
+ * Function that creates a Prisma field decorator.
+ * @param {IPrismaFieldOptions} options - options for the Prisma field
+ */
 export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): PropertyDecorator {
     return function (target: object, propertyKey: string | symbol) {
         if (!Reflect.hasMetadata("prisma:fields", target.constructor)) {
