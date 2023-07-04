@@ -16,6 +16,7 @@ export class FileModule {
     program!: ts.Program;
     checker!: ts.TypeChecker;
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
     public static getInstance(): FileModule {
@@ -47,7 +48,7 @@ export class FileModule {
         for (const property of type.getProperties()) {
             const propertyType = this.checker.getTypeOfSymbolAtLocation(property, node);
             const propertySymbol = propertyType.getSymbol()!;
-            let propertyTypeName = this.checker.typeToString(propertyType);
+            const propertyTypeName = this.checker.typeToString(propertyType);
 
             if (this.checker.isArrayType(propertyType)) {
                 const elementType = (propertyType as ts.TypeReference).typeArguments?.[0];

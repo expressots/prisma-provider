@@ -8,6 +8,9 @@ class User {
 
     @prismaField({ type: type.String })
     name!: string;
+
+    @prismaField({ type: type.String, isUnique: true })
+    email!: string;
 }
 
 export { User };
