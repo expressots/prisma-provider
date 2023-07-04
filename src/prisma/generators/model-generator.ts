@@ -6,11 +6,11 @@ import { IPrismaIndexOptions } from "../decorators/index.decorator";
 import { reflect } from "../reflect/reflect";
 import { FileInfo } from "../reflect/file-info";
 import { ClassExtractor } from "../reflect/extractor/class-extractor";
-import typeSearcher from "../../utils/typeSearcher";
-import removeUnusedEnumsAndTypes from "../../utils/removeUnusedEnumsAndTypes";
-import { execProcess } from "../../utils/execProcess";
+import typeSearcher from "../../utils/type-search";
+import removeUnusedEnumsAndTypes from "../../utils/del-unused-enum-types";
+import { execProcess } from "../../utils/execute-process";
 import Compiler from "../../utils/compiler";
-import { printError, printReason } from "../../utils/betterErrorMessage";
+import { printError, printReason } from "../../utils/better-error-message";
 
 async function generatePrismaModel(cls: any, filePath: string, schemaPath: string): Promise<void> {
     const reflectInfo: FileInfo[] = reflect({ fileArray: [filePath] });

@@ -1,12 +1,12 @@
 import { prismaField, prismaModel } from "../../prisma/decorators";
-import { ScalarType } from "../../prisma/types";
+import { db, type } from "../../prisma/types";
 
 @prismaModel()
 class User {
-    @prismaField({ type: ScalarType.Int, isId: true })
+    @prismaField({ type: type.Int, isId: true })
     id!: number;
 
-    @prismaField({ type: ScalarType.String })
+    @prismaField({ type: type.String })
     name!: string;
 }
 

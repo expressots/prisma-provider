@@ -1,17 +1,17 @@
 import fs from "fs";
-import { ScalarType } from "../prisma/types/scalar.types";
+import { type } from "../prisma/types/scalar.types";
 
-function convertType(type: string): string {
-    switch (type) {
+function convertType(typeParam: string): string {
+    switch (typeParam) {
         case "string":
-            return ScalarType.String;
+            return type.String;
         case "boolean":
-            return ScalarType.Boolean;
+            return type.Boolean;
         case "number":
-            return ScalarType.Int;
+            return type.Int;
         // Adicione outros casos conforme necessário para os tipos restantes
         default:
-            return type;
+            return typeParam;
     }
 }
 

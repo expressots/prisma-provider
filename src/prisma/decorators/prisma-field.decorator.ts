@@ -1,10 +1,5 @@
-import { fn } from "./../types/typeAttributes/attr-function";
-import { MongoAttrType } from "./../types/typeAttributes/mongo-attr";
-import { ScalarType } from "../types/scalar.types";
-import { PostgresAttrType } from "../types/typeAttributes/postgres-attr";
-import { MySQLAttrType } from "../types/typeAttributes/mysql-attr";
-import { MssqlAttrType } from "../types/typeAttributes/msql-attr";
-import { CockroachDBAttrType } from "../types/typeAttributes/cockroachDB-attr";
+import { type } from "../types/scalar.types";
+import { db } from "../types/db-type-specific";
 
 export const Default = {
     Auto: "auto()",
@@ -18,15 +13,8 @@ export const Default = {
 };
 
 export interface IPrismaFieldOptions<T = any> {
-    type?: ScalarType | Object | string;
-    attr?:
-        | PostgresAttrType
-        | MySQLAttrType
-        | MongoAttrType
-        | MssqlAttrType
-        | CockroachDBAttrType
-        | typeof fn
-        | string;
+    type?: type | object | string;
+    attr?: typeof db | string;
     isId?: boolean;
     isOptional?: boolean;
     isUnique?: boolean;
@@ -36,7 +24,7 @@ export interface IPrismaFieldOptions<T = any> {
 }
 
 export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): PropertyDecorator {
-    return function (target: Object, propertyKey: string | symbol) {
+    return function (target: object, propertyKey: string | symbol) {
         if (!Reflect.hasMetadata("prisma:fields", target.constructor)) {
             Reflect.defineMetadata("prisma:fields", [], target.constructor);
         }
@@ -47,7 +35,7 @@ export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): Prop
         ) as IPrismaFieldOptions[];
         const field: IPrismaFieldOptions = {
             name: options.name || propertyKey.toString(),
-            type: options.type || ScalarType.String || Object || String,
+            type: options.type || type.String || Object || String,
             attr: options.attr || undefined,
             isId: options.isId || false,
             prismaDefault: options.prismaDefault || undefined,

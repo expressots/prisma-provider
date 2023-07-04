@@ -1,4 +1,4 @@
-const enum ScalarType {
+const enum type {
     String = "String",
     Boolean = "Boolean",
     Int = "Int",
@@ -11,17 +11,4 @@ const enum ScalarType {
     Enum = "Enum",
 }
 
-const ScalarTypeMap: String[] = [
-    "String",
-    "Boolean",
-    "Int",
-    "BigInt",
-    "Float",
-    "Decimal",
-    "DateTime",
-    "Json",
-    "Bytes",
-    "Enum",
-];
-
-export { ScalarType, ScalarTypeMap };
+export { type };

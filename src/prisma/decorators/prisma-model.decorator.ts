@@ -3,7 +3,7 @@ export interface IPrismaModelOptions<T = any> {
 }
 
 export function prismaModel<T = any>(options: IPrismaModelOptions<T> = {}): ClassDecorator {
-    return function (target: Function) {
+    return function (target: any) {
         if (!Reflect.hasMetadata("prisma:model", target)) {
             Reflect.defineMetadata("prisma:model", [], target);
         }
