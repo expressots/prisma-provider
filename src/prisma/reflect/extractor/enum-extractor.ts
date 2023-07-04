@@ -8,7 +8,6 @@ export type EnumInfo = {
 };
 
 export class EnumExtractor {
-    //extracts all enums from all files
     public static enums(fileInfo: FileInfo[]): EnumInfo[] {
         const enums: EnumInfo[] = [];
         fileInfo.forEach((file) => {

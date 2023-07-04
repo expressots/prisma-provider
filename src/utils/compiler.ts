@@ -32,6 +32,7 @@ const regOpt: RegisterOptions = {
 class Compiler {
     private static instance: Compiler;
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
     static get Instance(): Compiler {

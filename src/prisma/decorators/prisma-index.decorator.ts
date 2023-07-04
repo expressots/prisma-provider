@@ -1,4 +1,4 @@
-export enum IndexType {
+enum IndexType {
     Brin = "Brin",
     Btree = "BTree",
     Gist = "Gist",
@@ -17,7 +17,7 @@ export interface IPrismaIndexOptions<T = any> {
 export function prismaIndex<T = any>(
     options: IPrismaIndexOptions<T>,
 ): ClassDecorator & PropertyDecorator {
-    return function (target: Object, propertyKey?: string | symbol) {
+    return function (target: object, propertyKey?: string | symbol) {
         if (propertyKey) {
             const indexOptions =
                 (Reflect.getMetadata(

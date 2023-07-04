@@ -9,13 +9,11 @@ function convertType(typeParam: string): string {
             return type.Boolean;
         case "number":
             return type.Int;
-        // Adicione outros casos conforme necessário para os tipos restantes
         default:
             return typeParam;
     }
 }
 
-// function to transform the enum to prisma format
 function transformEnum(enumName: string, enumValues: string[]): string {
     const prismaEnumValues = enumValues.map((value) => value.toUpperCase()).join("\n  ");
     return `enum ${enumName} {

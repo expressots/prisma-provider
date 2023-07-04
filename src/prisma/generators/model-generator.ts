@@ -1,8 +1,7 @@
 import fs from "fs";
 import glob from "glob";
 import path from "path";
-import { IPrismaFieldOptions, IPrismaModelOptions } from "../decorators";
-import { IPrismaIndexOptions } from "../decorators/index.decorator";
+import { IPrismaIndexOptions } from "../decorators/prisma-index.decorator";
 import { reflect } from "../reflect/reflect";
 import { FileInfo } from "../reflect/file-info";
 import { ClassExtractor } from "../reflect/extractor/class-extractor";
@@ -11,6 +10,8 @@ import removeUnusedEnumsAndTypes from "../../utils/del-unused-enum-types";
 import { execProcess } from "../../utils/execute-process";
 import Compiler from "../../utils/compiler";
 import { printError, printReason } from "../../utils/better-error-message";
+import { IPrismaFieldOptions } from "../decorators/prisma-field.decorator";
+import { IPrismaModelOptions } from "../decorators/prisma-model.decorator";
 
 async function generatePrismaModel(cls: any, filePath: string, schemaPath: string): Promise<void> {
     const reflectInfo: FileInfo[] = reflect({ fileArray: [filePath] });
