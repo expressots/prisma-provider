@@ -11,8 +11,9 @@ datasource db {
 }
 
 model User {
-  id    String @id
-  email String @unique
+  id        String   @id
+  email     String   @unique
+  updatedAt DateTime @updatedAt
 
   @@index([email])
 }

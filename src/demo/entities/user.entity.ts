@@ -1,4 +1,4 @@
-import { prismaField, prismaIndex, prismaModel } from "../../prisma/decorators";
+import { Default, prismaField, prismaIndex, prismaModel } from "../../prisma/decorators";
 import { db, type } from "../../prisma/types";
 
 enum Color {
@@ -16,7 +16,8 @@ class User {
     @prismaIndex({ fields: ["email"] })
     email!: string;
 
-    cpf!: string;
+    @prismaField({ type: type.DateTime, prismaDefault: Default.UpdateAt })
+    updatedAt!: Date;
 }
 
 export { User };

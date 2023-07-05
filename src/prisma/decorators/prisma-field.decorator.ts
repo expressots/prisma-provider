@@ -12,6 +12,7 @@ export const Default = {
     Uuid: "uuid()",
     Now: "now()",
     DBgenerated: "dbgenerated()",
+    UpdateAt: "@updatedAt",
     /**
      * Function to set a default value for a Prisma field.
      * If the value is a string, it will be wrapped in quotes.

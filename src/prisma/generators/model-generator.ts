@@ -97,7 +97,11 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
             }
 
             if (prismaDefault) {
-                fieldString += ` @default(${prismaDefault})`;
+                if (prismaDefault === "@updatedAt") {
+                    fieldString += ` ${prismaDefault}`;
+                } else {
+                    fieldString += ` @default(${prismaDefault})`;
+                }
             }
 
             if (mapField) {
