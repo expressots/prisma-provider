@@ -4,7 +4,7 @@ import path from "path";
 import { IPrismaIndexOptions } from "../decorators/prisma-index.decorator";
 import { reflect } from "../reflect/reflect";
 import { FileInfo } from "../reflect/file-info";
-import { ClassExtractor } from "../reflect/extractor/class-extractor";
+import { ClassExtractor, ClassInfo } from "../reflect/extractor/class-extractor";
 import typeSearcher from "../../utils/type-search";
 import removeUnusedEnumsAndTypes from "../../utils/del-unused-enum-types";
 import { execProcess } from "../../utils/execute-process";
@@ -13,16 +13,50 @@ import { printError, printReason } from "../../utils/better-error-message";
 import { IPrismaFieldOptions } from "../decorators/prisma-field.decorator";
 import { IPrismaModelOptions } from "../decorators/prisma-model.decorator";
 
-async function generatePrismaModel(cls: any, filePath: string, schemaPath: string): Promise<void> {
-    const reflectInfo: FileInfo[] = reflect({ fileArray: [filePath] });
-    const model = (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
+type Decorator = {
+    model: IPrismaModelOptions;
+    fields: IPrismaFieldOptions[];
+    indexes: IPrismaIndexOptions[];
+};
+
+function getDecorators(cls: any): Decorator {
+    const modelDecorator =
+        (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
+    const fieldsDecorator =
+        (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
     const indexOptions = (Reflect.getMetadata("prisma:index", cls) as IPrismaIndexOptions[]) || [];
 
-    if (model) {
-        const className = cls.name;
-        const fields = (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
-        const classInfo = ClassExtractor.byName(ClassExtractor.classes(reflectInfo), className);
+    return {
+        model: modelDecorator,
+        fields: fieldsDecorator,
+        indexes: indexOptions,
+    };
+}
 
+function getFileInfo(filePath: string): FileInfo[] | undefined {
+    return reflect({ fileArray: [filePath] });
+}
+
+function getClassInfo(cls: any, filePath: string): ClassInfo | undefined {
+    return ClassExtractor.byName(ClassExtractor.classes(getFileInfo(filePath)!), cls.name);
+}
+
+function getProviderValue(schemaPath: string): string {
+    const schemaContent = fs.readFileSync(schemaPath, "utf-8");
+
+    // Get the provider value from the schema.prisma file
+    const providerRegex = /datasource\s+db\s*\{[\s\S]*?provider\s*=\s*"([^"]*)"/;
+    const matchProvider = schemaContent.match(providerRegex);
+
+    return matchProvider ? matchProvider[1] : "";
+}
+
+async function generatePrismaModel(cls: any, filePath: string, schemaPath: string): Promise<void> {
+    const className = cls.name;
+    const classInfo = getClassInfo(cls, filePath);
+    const { model, fields, indexes } = getDecorators(cls);
+
+    if (model) {
         const idFields: string[] = [];
         const uniqueFields: string[] = [];
 
@@ -74,28 +108,15 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
         });
 
         const modelString = `model ${className} {\n  ${fieldStrings.join("\n  ")}\n}`;
-
         const schemaContent = fs.readFileSync(schemaPath, "utf-8");
-
-        // REVIEW: see if is better form to get the provider
-        const regex = /datasource\s+db\s+{\s+provider\s*=\s*"(.+)"\s+url\s*=\s*".*"\s+}/;
-        const matcheProvider = schemaContent.match(regex);
-        let providerValue = "";
-        if (matcheProvider) {
-            providerValue = matcheProvider[1];
-        }
 
         const modelRegex = new RegExp(`(model ${className} {[^}]*})`, "g");
         const modelExists = modelRegex.test(schemaContent);
 
         let updatedContent;
         if (modelExists) {
-            // Update the existing model
             updatedContent = schemaContent.replace(modelRegex, modelString);
         } else {
-            // REVIEW: See if we are going to use the [Model] or not
-            // Add the new model after the [Models] comment
-            // updatedContent = schemaContent.replace("// [Models]", `// [Models]\n\n${modelString}`);
             updatedContent = `${schemaContent}\n\n${modelString}`;
         }
 
@@ -105,18 +126,11 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
             const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
             updatedContent = updatedContent.replace(modelRegex, `$1\n  ${idFieldsString}\n`);
         } else if (idFields.length === 1) {
-            // BUG: when we have two classes with the same field name, it will add the @id annotation to both
             const regexPattern = `model\\s+${className}\\s+{[^}]*?${idFields[0]}\\s+\\w+[^}]*}`;
             const regex = new RegExp(regexPattern);
-            // Realizar o replace do valor do campo
             updatedContent = updatedContent.replace(regex, (match) => {
                 return match.replace(new RegExp(`(${idFields[0]} [A-Za-z]*)`), `$1 @id`);
             });
-
-            // updatedContent = updatedContent.replace(
-            // new RegExp(`(${idFields[0]} [A-Za-z]*)`),
-            // `$1 @id`
-            // )
         }
 
         // Join the uniqueFields with comma separation and add them as a new fieldString if there's more than one unique field
@@ -125,18 +139,11 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
             const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
             updatedContent = updatedContent.replace(modelRegex, `$1\n  ${uniqueFieldsString}\n`);
         } else if (uniqueFields.length === 1) {
-            // BUG: when we have two classes with the same field name, it will add the @unique annotation to both
             const regexPattern = `model\\s+${className}\\s+{[^}]*?${idFields[0]}\\s+\\w+[^}]*}`;
             const regex = new RegExp(regexPattern);
-            // Realizar o replace do valor do campo
             updatedContent = updatedContent.replace(regex, (match) => {
                 return match.replace(new RegExp(`(${uniqueFields[0]} [A-Za-z]*)`), `$1 @unique`);
             });
-
-            // updatedContent = updatedContent.replace(
-            // new RegExp(`(${uniqueFields[0]} [A-Za-z]*)`),
-            // `$1 @unique`
-            // )
         }
 
         // Add @@map model annotation
@@ -146,8 +153,8 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
         }
 
         // Add @@index model annotation
-        if (indexOptions) {
-            for (const index of indexOptions) {
+        if (indexes) {
+            for (const index of indexes) {
                 const modelRegex = new RegExp(`(model ${className} {[^}]*)`, "g");
                 const indexString = index.fields.join(", ");
 
@@ -170,22 +177,23 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
         }
 
         // Collect the depending types
-        const providersNotSuportEnum = ["sqlserver", "sqlite"];
-        const providersSuportTypes = ["mongodb"];
+        const providerValue = getProviderValue(schemaPath);
+        const providersNotSupportEnum = ["sqlserver", "sqlite"];
+        const providersSupportTypes = ["mongodb"];
 
         if (classInfo) {
             for (const property of classInfo?.properties) {
                 if (property.pathDeclaration && property.pathDeclaration !== "") {
                     const type = property.type.replace(/[\[\]?!]/g, "");
                     const field = fields.find((field) => field.name === property.name);
-                    // if property is not a prisma field, skip
+
                     if (!field) {
                         continue;
                     }
                     const value = typeSearcher(type, property.pathDeclaration);
                     if (value) {
                         if (value?.includes("enum")) {
-                            if (providersNotSuportEnum.includes(providerValue)) {
+                            if (providersNotSupportEnum.includes(providerValue)) {
                                 printError(`The Provider ${providerValue} not suport enums`, type);
                                 continue;
                             }
@@ -194,12 +202,10 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
                             if (enumExists) {
                                 updatedContent = updatedContent.replace(enumRegex, value);
                             } else {
-                                // REVIEW: See if we are going to use the [Enums] or not
-                                // updatedContent = updatedContent.replace("// [Enums]", `// [Enums]\n\n${value}`);
                                 updatedContent = `${updatedContent}\n\n${value}`;
                             }
                         } else if (value?.includes("type")) {
-                            if (!providersSuportTypes.includes(providerValue)) {
+                            if (!providersSupportTypes.includes(providerValue)) {
                                 printError(`The Provider ${providerValue} not suport types`, type);
                                 continue;
                             }
@@ -208,8 +214,6 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
                             if (typeExists) {
                                 updatedContent = updatedContent.replace(typeRegex, value);
                             } else {
-                                // REVIEW: See if we are going to use the [Types] or not
-                                // updatedContent = updatedContent.replace("// [Types]", `// [Types]\n\n${value}`);
                                 updatedContent = `${updatedContent}\n\n${value}`;
                             }
                         }
@@ -219,7 +223,6 @@ async function generatePrismaModel(cls: any, filePath: string, schemaPath: strin
         }
 
         fs.writeFileSync(schemaPath, updatedContent);
-        // remove model if not decorated
     } else {
         const className = cls.name;
         const schemaContent = fs.readFileSync(schemaPath, "utf-8");

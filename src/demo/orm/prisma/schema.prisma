@@ -6,12 +6,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = ""
 }
 
 model User {
-  id    Int    @id
-  name  String
+  id    String @id
   email String @unique
 }
