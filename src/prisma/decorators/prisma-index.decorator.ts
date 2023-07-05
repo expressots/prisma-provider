@@ -1,7 +1,7 @@
 /**
  * Enum representing different types of indexes.
  */
-enum IndexType {
+export enum IndexType {
     Brin = "Brin",
     Btree = "BTree",
     Gist = "Gist",
