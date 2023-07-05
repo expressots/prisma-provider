@@ -21,7 +21,7 @@ type Decorator = {
     relations: IPrismaRelationOptions[];
 };
 
-function getDecorators(cls: any): Decorator {
+export function getDecorators(cls: any): Decorator {
     const modelDecorator =
         (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
     const fieldsDecorator =
@@ -38,15 +38,15 @@ function getDecorators(cls: any): Decorator {
     };
 }
 
-function getFileInfo(filePath: string): FileInfo[] | undefined {
+export function getFileInfo(filePath: string): FileInfo[] | undefined {
     return reflect({ fileArray: [filePath] });
 }
 
-function getClassInfo(cls: any, filePath: string): ClassInfo | undefined {
+export function getClassInfo(cls: any, filePath: string): ClassInfo | undefined {
     return ClassExtractor.byName(ClassExtractor.classes(getFileInfo(filePath)!), cls.name);
 }
 
-function getProviderValue(schemaPath: string): string {
+export function getProviderValue(schemaPath: string): string {
     const schemaContent = fs.readFileSync(schemaPath, "utf-8");
 
     // Get the provider value from the schema.prisma file
@@ -56,7 +56,11 @@ function getProviderValue(schemaPath: string): string {
     return matchProvider ? matchProvider[1] : "";
 }
 
-async function generatePrismaModel(cls: any, filePath: string, schemaPath: string): Promise<void> {
+export async function generatePrismaModel(
+    cls: any,
+    filePath: string,
+    schemaPath: string,
+): Promise<void> {
     const className = cls.name;
     const classInfo = getClassInfo(cls, filePath);
     const { model, fields, indexes, relations } = getDecorators(cls);
