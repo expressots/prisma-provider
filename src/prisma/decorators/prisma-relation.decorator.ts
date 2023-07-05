@@ -1,4 +1,25 @@
 /**
+ * Enum that specifies the various kinds of relations that Prisma supports.
+ */
+export enum Relation {
+    OneToOne = "OneToOne",
+    OneToMany = "OneToMany",
+    ManyToOne = "ManyToOne",
+    ManyToMany = "ManyToMany",
+}
+
+/**
+ * Enum that specifies the different actions that Prisma can take on related data.
+ */
+export enum Action {
+    Cascade = "Cascade",
+    SetNull = "SetNull",
+    Restrict = "Restrict",
+    NoAction = "NoAction",
+    SetDefault = "SetDefault",
+}
+
+/**
  * Interface for defining options for Prisma relation.
  */
 export interface IPrismaRelationOptions {
@@ -8,19 +29,39 @@ export interface IPrismaRelationOptions {
     name?: string;
 
     /**
-     * Optional related entity name for the relation.
+     * Relation type.
      */
-    relatedEntity?: string;
+    relation: Relation;
 
     /**
-     * An array of field names in the relation.
+     * Related entity.
      */
-    fields: string[];
+    model: object;
 
     /**
-     * An array of reference names in the relation.
+     * List of primary keys in the relation.
      */
-    references: string[];
+    PK: string[];
+
+    /**
+     * List of foreign keys names given in the relation.
+     */
+    FK?: string[];
+
+    /**
+     * Behavior on delete.
+     */
+    onDelete?: Action;
+
+    /**
+     * Behavior on update.
+     */
+    onUpdate?: Action;
+
+    /**
+     * Optional name for the relation.
+     */
+    map?: string;
 }
 
 /**
@@ -28,7 +69,7 @@ export interface IPrismaRelationOptions {
  * @param {IPrismaRelationOptions} options - Options for the Prisma relation.
  */
 export function prismaRelation(options: IPrismaRelationOptions): PropertyDecorator {
-    return function (target: object, propertyKey: string | symbol) {
+    return function (target: object) {
         if (!Reflect.hasMetadata("prisma:relations", target.constructor)) {
             Reflect.defineMetadata("prisma:relations", [], target.constructor);
         }
@@ -38,10 +79,14 @@ export function prismaRelation(options: IPrismaRelationOptions): PropertyDecorat
             target.constructor,
         ) as IPrismaRelationOptions[];
         const relation: IPrismaRelationOptions = {
-            name: propertyKey.toString(),
-            relatedEntity: options.relatedEntity || undefined,
-            fields: options.fields,
-            references: options.references,
+            name: options.name || undefined,
+            relation: options.relation,
+            model: options.model,
+            PK: options.PK,
+            FK: options.FK || undefined,
+            onDelete: options.onDelete || undefined,
+            onUpdate: options.onUpdate || undefined,
+            map: options.map || undefined,
         };
 
         relations.push(relation);

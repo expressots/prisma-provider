@@ -11,9 +11,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id
-  email     String   @unique
+  id String @id
+  email String @unique
   updatedAt DateTime @updatedAt
+  profile Profile?
 
   @@index([email])
+}
+
+model Profile {
+  id Int @id
+  bio String @unique
 }

@@ -1,7 +1,6 @@
 import fs from "fs";
 import glob from "glob";
 import path from "path";
-import { IPrismaIndexOptions } from "../decorators/prisma-index.decorator";
 import { reflect } from "../reflect/reflect";
 import { FileInfo } from "../reflect/file-info";
 import { ClassExtractor, ClassInfo } from "../reflect/extractor/class-extractor";
@@ -10,13 +9,16 @@ import removeUnusedEnumsAndTypes from "../../utils/del-unused-enum-types";
 import { execProcess } from "../../utils/execute-process";
 import Compiler from "../../utils/compiler";
 import { printError, printReason } from "../../utils/better-error-message";
-import { IPrismaFieldOptions } from "../decorators/prisma-field.decorator";
 import { IPrismaModelOptions } from "../decorators/prisma-model.decorator";
+import { IPrismaFieldOptions } from "../decorators/prisma-field.decorator";
+import { IPrismaIndexOptions } from "../decorators/prisma-index.decorator";
+import { IPrismaRelationOptions } from "../decorators/prisma-relation.decorator";
 
 type Decorator = {
     model: IPrismaModelOptions;
     fields: IPrismaFieldOptions[];
     indexes: IPrismaIndexOptions[];
+    relations: IPrismaRelationOptions[];
 };
 
 function getDecorators(cls: any): Decorator {
@@ -25,11 +27,14 @@ function getDecorators(cls: any): Decorator {
     const fieldsDecorator =
         (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
     const indexOptions = (Reflect.getMetadata("prisma:index", cls) as IPrismaIndexOptions[]) || [];
+    const relationOptions =
+        (Reflect.getMetadata("prisma:relations", cls) as IPrismaRelationOptions[]) || [];
 
     return {
         model: modelDecorator,
         fields: fieldsDecorator,
         indexes: indexOptions,
+        relations: relationOptions,
     };
 }
 
@@ -54,7 +59,7 @@ function getProviderValue(schemaPath: string): string {
 async function generatePrismaModel(cls: any, filePath: string, schemaPath: string): Promise<void> {
     const className = cls.name;
     const classInfo = getClassInfo(cls, filePath);
-    const { model, fields, indexes } = getDecorators(cls);
+    const { model, fields, indexes, relations } = getDecorators(cls);
 
     if (model) {
         const idFields: string[] = [];
