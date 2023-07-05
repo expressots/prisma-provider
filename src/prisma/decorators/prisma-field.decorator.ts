@@ -24,7 +24,7 @@ export const Default = {
 /**
  * Interface for options that can be passed to a Prisma field.
  */
-export interface IPrismaFieldOptions<T = any> {
+export interface IPrismaFieldOptions {
     type?: type | object | string;
     attr?: typeof db | string;
     isId?: boolean;
@@ -39,7 +39,7 @@ export interface IPrismaFieldOptions<T = any> {
  * Function that creates a Prisma field decorator.
  * @param {IPrismaFieldOptions} options - options for the Prisma field
  */
-export function prismaField<T = any>(options: IPrismaFieldOptions<T> = {}): PropertyDecorator {
+export function prismaField(options: IPrismaFieldOptions = {}): PropertyDecorator {
     return function (target: object, propertyKey: string | symbol) {
         if (!Reflect.hasMetadata("prisma:fields", target.constructor)) {
             Reflect.defineMetadata("prisma:fields", [], target.constructor);
