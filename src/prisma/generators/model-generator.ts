@@ -13,6 +13,9 @@ import { IPrismaModelOptions } from "../decorators/prisma-model.decorator";
 import { IPrismaFieldOptions } from "../decorators/prisma-field.decorator";
 import { IPrismaIndexOptions } from "../decorators/prisma-index.decorator";
 import { IPrismaRelationOptions } from "../decorators/prisma-relation.decorator";
+import { Relationships, createRelationships, generatePrismaRelations } from "./relationships";
+
+const RELATIONS: Relationships[] = [];
 
 type Decorator = {
     model: IPrismaModelOptions;
@@ -235,6 +238,22 @@ export async function generatePrismaModel(
             }
         }
 
+        if (cls && relations.length > 0) {
+            // Generate relashionships
+            for (const relation of relations) {
+                const relationships: Relationships | undefined = await createRelationships(
+                    relation,
+                    cls,
+                    filePath,
+                );
+
+                if (relationships) {
+                    RELATIONS.push(relationships);
+                }
+            }
+            console.log("RELATIONS", RELATIONS);
+        }
+
         fs.writeFileSync(schemaPath, updatedContent);
     } else {
         const className = cls.name;
@@ -315,6 +334,7 @@ async function codeFirstGen(): Promise<void> {
         const entityNamePattern = opinionated ? "entity" : providers.Prisma.entityNamePattern;
 
         await readAllEntities(entitiesPath, schemaPath, entityNamePattern);
+        await generatePrismaRelations(schemaPath, RELATIONS);
         await removeUnusedEnumsAndTypes(schemaPath);
     }
 

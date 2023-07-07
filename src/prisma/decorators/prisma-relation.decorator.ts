@@ -36,7 +36,7 @@ export interface IPrismaRelationOptions {
     /**
      * Related entity.
      */
-    model: object;
+    model: string; // TODO: Change type to object.
 
     /**
      * List of primary keys in the relation.
@@ -61,7 +61,7 @@ export interface IPrismaRelationOptions {
     /**
      * Optional name for the relation.
      */
-    map?: string;
+    map?: string; // TODO: check the use of the map in relationship.
 }
 
 /**
