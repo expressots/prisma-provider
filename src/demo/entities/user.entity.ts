@@ -33,7 +33,7 @@ class User {
     @prismaRelation({
         relation: Relation.OneToOne,
         model: "Profile",
-        PK: ["id", "email"],
+        PK: ["id"],
         onDelete: Action.Cascade,
     })
     profile!: Profile;
@@ -41,7 +41,7 @@ class User {
     @prismaField({ type: Post, isOptional: true })
     @prismaRelation({
         name: "post_FK",
-        relation: Relation.OneToOne,
+        relation: Relation.OneToMany,
         model: "Post",
         PK: ["id"],
         onDelete: Action.Restrict,

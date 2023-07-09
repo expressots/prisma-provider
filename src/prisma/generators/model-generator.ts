@@ -239,8 +239,8 @@ export async function generatePrismaModel(
         }
 
         if (cls && relations.length > 0) {
-            // Generate relashionships
-            for (const relation of relations) {
+            // Generate relationships using map
+            relations.map(async (relation) => {
                 const relationships: Relationships | undefined = await createRelationships(
                     relation,
                     cls,
@@ -250,8 +250,7 @@ export async function generatePrismaModel(
                 if (relationships) {
                     RELATIONS.push(relationships);
                 }
-            }
-            console.log("RELATIONS", RELATIONS);
+            });
         }
 
         fs.writeFileSync(schemaPath, updatedContent);
@@ -300,7 +299,6 @@ async function readAllEntities(
 
         for (const match of classNameMatch) {
             const className = match[1];
-
             try {
                 const module = await import(path.resolve(file));
                 const entityClass = module[className];
@@ -342,13 +340,13 @@ async function codeFirstGen(): Promise<void> {
     // Review: check when one of the processes gives an error when executing the other does not execute
     await execProcess({
         commandArg: "npx",
-        args: ["prisma", "validate"],
+        args: ["prisma", "format"],
         directory: PROJECT_ROOT,
     });
 
     await execProcess({
         commandArg: "npx",
-        args: ["prisma", "format"],
+        args: ["prisma", "validate"],
         directory: PROJECT_ROOT,
     });
 }

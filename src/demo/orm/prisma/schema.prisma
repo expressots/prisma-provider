@@ -10,14 +10,25 @@ datasource db {
   url      = ""
 }
 
+model Category {
+  id   String @id @default(uuid())
+  name String @default(uuid())
+  post Post[]
+}
+
+model Post {
+  id       String     @id @default(uuid())
+  name     String     @default(uuid())
+  category Category[]
+  user     User       @relation("post_FK", fields: [postId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  postId   String     @unique
+}
+
 model Profile {
   id        Int    @id
   bio       String @unique
-  user      User   @relation(fields: [profileId, emailId], references: [id, email], onDelete: Cascade)
-  profileId String
-  emailId   String
-
-  @@unique([profileId, emailId])
+  user      User   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String @unique
 }
 
 model User {
@@ -25,17 +36,7 @@ model User {
   email     String   @unique
   updatedAt DateTime @updatedAt
   profile   Profile?
-  post      Post?    @relation("post_FK")
+  post      Post[]   @relation("post_FK")
 
-  @@unique([id, email])
   @@index([email])
-}
-
-model Post {
-  id     String @default(uuid()) @map("_id")
-  name   String @default(uuid())
-  user   User   @relation("post_FK", fields: [postId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  postId String @unique
-
-  @@id([id, name])
 }

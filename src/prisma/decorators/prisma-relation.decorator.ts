@@ -4,7 +4,6 @@
 export enum Relation {
     OneToOne = "OneToOne",
     OneToMany = "OneToMany",
-    ManyToOne = "ManyToOne",
     ManyToMany = "ManyToMany",
 }
 
@@ -41,7 +40,7 @@ export interface IPrismaRelationOptions {
     /**
      * List of primary keys in the relation.
      */
-    PK: string[];
+    PK?: string[] | undefined; // TODO: Check the use of PK in relationship when relation is Implicit ManyToMany.
 
     /**
      * List of foreign keys names given in the relation.
@@ -82,7 +81,7 @@ export function prismaRelation(options: IPrismaRelationOptions): PropertyDecorat
             name: options.name || undefined,
             relation: options.relation,
             model: options.model,
-            PK: options.PK,
+            PK: options.PK || undefined,
             FK: options.FK || undefined,
             onDelete: options.onDelete || undefined,
             onUpdate: options.onUpdate || undefined,
