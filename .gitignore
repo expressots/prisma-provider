@@ -9,6 +9,7 @@ lib
 
 # Remove demo files
 /demo/
+demo
 
 # Remove expressots config file
 expressots.config.ts
