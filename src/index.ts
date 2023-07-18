@@ -1,3 +1,3 @@
+export * from "./@types"; // replace with common package
 export * from "./prisma/decorators";
-export * from "./prisma/generator";
 export * from "./prisma/types";

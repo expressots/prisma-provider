@@ -3,3 +3,12 @@ node_modules
 .env
 *-lock.json
 lib
+
+# Files created by Visual Studio Code
+.vscode
+
+# Remove demo files
+/demo/
+
+# Remove expressots config file
+expressots.config.ts
