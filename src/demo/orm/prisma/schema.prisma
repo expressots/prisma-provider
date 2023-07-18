@@ -10,33 +10,20 @@ datasource db {
   url      = ""
 }
 
-model Category {
-  id   String @id @default(uuid())
-  name String @default(uuid())
-  post Post[]
+model User {
+  id String @id
+  name String
+  email String
+  age String?
+  posts Post[]
+
+  @@unique([name, email])
 }
 
 model Post {
-  id       String     @id @default(uuid())
-  name     String     @default(uuid())
-  category Category[]
-  user     User       @relation("post_FK", fields: [postId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  postId   String     @unique
-}
+  id String @id
+  title String
+  content String
+user User @relation(fields: [postId], references: [authorId])
 
-model Profile {
-  id        Int    @id
-  bio       String @unique
-  user      User   @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId String @unique
-}
-
-model User {
-  id        String   @id
-  email     String   @unique
-  updatedAt DateTime @updatedAt
-  profile   Profile?
-  post      Post[]   @relation("post_FK")
-
-  @@index([email])
 }

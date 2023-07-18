@@ -13,7 +13,7 @@ import { IPrismaModelOptions } from "../decorators/prisma-model.decorator";
 import { IPrismaFieldOptions } from "../decorators/prisma-field.decorator";
 import { IPrismaIndexOptions } from "../decorators/prisma-index.decorator";
 import { IPrismaRelationOptions } from "../decorators/prisma-relation.decorator";
-import { Relationships, createRelationships, generatePrismaRelations } from "./relationships";
+import { Relationships, createRelationships, generatePrismaRelations } from "./relationship.helper";
 
 const RELATIONS: Relationships[] = [];
 

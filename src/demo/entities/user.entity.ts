@@ -1,53 +1,21 @@
-import {
-    Default,
-    prismaField,
-    prismaIndex,
-    prismaModel,
-    prismaRelation,
-} from "../../prisma/decorators";
-import { Action, Relation } from "../../prisma/decorators/prisma-relation.decorator";
-import { type } from "../../prisma/types";
+import { prismaField, prismaModel, prismaRelation } from "../../prisma";
+import { Relation } from "../../prisma/decorators/prisma-relation.decorator";
 import { Post } from "./post.entity";
 
 @prismaModel()
-class Profile {
-    @prismaField({ type: type.Int, isId: true })
-    id!: number;
-    @prismaField({ type: type.String, isUnique: true })
-    bio!: string;
-}
-
-@prismaModel()
 class User {
-    @prismaField({ type: type.String, isId: true })
+    @prismaField({ isId: true })
     id!: string;
-
-    @prismaField({ type: type.String, isUnique: true })
-    @prismaIndex({ fields: ["email"] })
+    @prismaField({ isUnique: true })
+    name!: string;
+    @prismaField({ isUnique: true })
     email!: string;
+    @prismaField({ isOptional: true })
+    age?: number;
 
-    @prismaField({ type: type.DateTime, prismaDefault: Default.UpdateAt })
-    updatedAt!: Date;
-
-    @prismaField({ type: Profile, isOptional: true })
-    @prismaRelation({
-        relation: Relation.OneToOne,
-        model: "Profile",
-        PK: ["id"],
-        onDelete: Action.Cascade,
-    })
-    profile!: Profile;
-
-    @prismaField({ type: Post, isOptional: true })
-    @prismaRelation({
-        name: "post_FK",
-        relation: Relation.OneToMany,
-        model: "Post",
-        PK: ["id"],
-        onDelete: Action.Restrict,
-        onUpdate: Action.Cascade,
-    })
-    post!: Post;
+    @prismaField({ type: Post })
+    @prismaRelation({ relation: Relation.OneToMany, model: "Post", PK: ["authorId"] })
+    posts?: Post[];
 }
 
-export { User, Profile };
+export { User };
