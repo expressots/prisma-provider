@@ -5,6 +5,7 @@ export enum Relation {
     OneToOne = "OneToOne",
     OneToMany = "OneToMany",
     ManyToMany = "ManyToMany",
+    ManyToManyExplicit = "ManyToManyExplicit",
 }
 
 /**
@@ -24,6 +25,9 @@ export enum Action {
 export interface IPrismaRelationOptions {
     /**
      * Optional name for the relation.
+     * @default undefined
+     * @remarks
+     * This option is only applicable for OneToOne and OneToMany relations.
      */
     name?: string;
 
@@ -39,13 +43,16 @@ export interface IPrismaRelationOptions {
 
     /**
      * List of primary keys in the relation.
+     *
+     * This option is required for relation types OneToOne, OneToMany,
+     * and ManyToManyExplicit, but it will be ignored for the ManyToMany type if passed.
      */
-    PK?: string[] | undefined; // TODO: Check the use of PK in relationship when relation is Implicit ManyToMany.
+    refs?: string[] | undefined;
 
     /**
      * List of foreign keys names given in the relation.
      */
-    FK?: string[];
+    fields?: string[];
 
     /**
      * Behavior on delete.
@@ -58,9 +65,12 @@ export interface IPrismaRelationOptions {
     onUpdate?: Action;
 
     /**
-     * Optional name for the relation.
+     * Specifies if the relation is optional.
+     * @default true
+     * @remarks
+     * This option is only applicable for OneToOne and OneToMany relations.
      */
-    map?: string; // TODO: check the use of the map in relationship.
+    isRequired?: boolean;
 }
 
 /**
@@ -81,11 +91,11 @@ export function prismaRelation(options: IPrismaRelationOptions): PropertyDecorat
             name: options.name || undefined,
             relation: options.relation,
             model: options.model,
-            PK: options.PK || undefined,
-            FK: options.FK || undefined,
+            refs: options.refs || undefined,
+            fields: options.fields || undefined,
             onDelete: options.onDelete || undefined,
             onUpdate: options.onUpdate || undefined,
-            map: options.map || undefined,
+            isRequired: options.isRequired || false,
         };
 
         relations.push(relation);

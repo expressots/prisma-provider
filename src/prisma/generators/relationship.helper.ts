@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import fs from "fs";
 import path from "path";
-import { IPrismaRelationOptions, Relation } from "../decorators/prisma-relation.decorator";
-import { ClassInfo } from "../reflect";
+import { ClassInfo, PropertyInfo } from "../reflect";
 import { getClassInfo, getDecorators } from "./model-generator";
 import { printError } from "../../utils/better-error-message";
+import { IPrismaRelationOptions, Relation } from "../decorators/prisma-relation.decorator";
 
 type Relationships = {
     fromEntity: string;
@@ -15,187 +15,216 @@ type Relationships = {
 
     newRowsTo: string[];
     newRowsFrom: string[];
+
+    relationType: Relation;
+    classRelation: PropertyInfo | undefined;
 };
 
 async function createRelationships(
-    relation: IPrismaRelationOptions,
+    relationSettings: IPrismaRelationOptions,
     cls: any,
     filePath: string,
 ): Promise<Relationships | undefined> {
+    // get the class info from the class
     const fromClass: ClassInfo | undefined = getClassInfo(cls, filePath);
     if (!fromClass) {
         return undefined;
     }
 
+    const relConstructor = {
+        relationStringTo: [] as string[], // store the relation string for the to entity
+        relationStringFrom: [] as string[], // store the relation of actual entity
+        newRowsTo: [] as string[], // store the new rows for the to entity
+        newRowsFrom: [] as string[], // store the new rows for the actual entity
+    };
+
     // get from class the property that is the relation
     const classRelation = fromClass.properties.find((property) => {
-        if (property.type === relation.model) {
+        if (property.type.replace(/[\[\]?!]/g, "") === relationSettings.model) {
             return property;
         }
     });
 
-    const relationStringTo: string[] = []; // store the relation string for the to entity
-    const relationStringFrom: string[] = []; // store the relation of actual entity
-    const newRowsTo: string[] = []; // store the new rows for the to entity
-    const newRowsFrom: string[] = []; // store the new rows for the actual entity
-
-    // if relation name is defined
-    if (relation.name) {
-        relationStringTo.push(`"${relation.name}"`);
-        relationStringFrom.push(`"${relation.name}"`);
-    }
-
-    if (relation.PK) {
+    // Create fields for relation (OneToOne, OneToManny, ManyToMany Explicit).
+    if (relationSettings.relation !== Relation.ManyToMany && relationSettings.refs) {
         // logic for create the foreign keys
-        const fks = relation.FK ? relation.FK.length : -1;
-        const pks = relation.PK.length;
+        const fks = relationSettings.fields ? relationSettings.fields.length : -1;
+        const pks = relationSettings.refs.length;
 
-        // Create FK(fields) for relation (OneToOne, OneToManny, ManyToMany Explicit).
-        if (relation.relation !== Relation.ManyToMany && relation.PK) {
-            const formattedFK: string[] = [];
-            if (fks === pks && relation.FK) {
-                for (let i = 0; i < relation.FK.length; i++) {
-                    if (i === 0) {
+        const formattedFK: string[] = [];
+
+        switch (relationSettings.relation) {
+            case Relation.ManyToManyExplicit:
+                if (fks === pks && relationSettings.fields) {
+                    for (let i = 0; i < relationSettings.fields.length; i++) {
                         formattedFK.push(
-                            `${relation.model[0].toLowerCase() + relation.model.slice(1)}Id`,
+                            i === 0
+                                ? `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)}Id`
+                                : `${relationSettings.fields[i]}Id`,
                         );
-                    } else {
-                        formattedFK.push(`${relation.FK[i]}Id`);
+                    }
+                } else if (fks < pks) {
+                    for (let i = 0; i < relationSettings.refs.length; i++) {
+                        formattedFK.push(
+                            i === 0
+                                ? `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)}Id`
+                                : `${relationSettings.refs[i]}Id`,
+                        );
                     }
                 }
-                relationStringTo.push(`fields: [${formattedFK.join(", ")}]`);
-            } else if (fks < pks) {
-                for (let i = 0; i < relation.PK.length; i++) {
-                    if (i === 0) {
+                break;
+            default:
+                if (fks === pks && relationSettings.fields) {
+                    for (let i = 0; i < relationSettings.fields.length; i++) {
                         formattedFK.push(
-                            `${relation.model[0].toLowerCase() + relation.model.slice(1)}Id`,
+                            i === 0
+                                ? `${
+                                      relationSettings.model[0].toLowerCase() +
+                                      relationSettings.model.slice(1)
+                                  }Id`
+                                : `${relationSettings.fields[i]}Id`,
                         );
-                    } else {
-                        formattedFK.push(`${relation.PK[i]}Id`);
+                    }
+                } else if (fks < pks) {
+                    for (let i = 0; i < relationSettings.refs.length; i++) {
+                        formattedFK.push(
+                            i === 0
+                                ? `${
+                                      relationSettings.model[0].toLowerCase() +
+                                      relationSettings.model.slice(1)
+                                  }Id`
+                                : `${relationSettings.refs[i]}Id`,
+                        );
                     }
                 }
-                relationStringTo.push(`fields: [${formattedFK.join(", ")}]`);
-            } else if (fks > pks) {
-                printError("Fk > Pks", `relation: ${relation.name}`);
-                process.exit(1);
+                break;
+        }
+
+        if (formattedFK.length > 0) {
+            relConstructor.relationStringTo.push(`fields: [${formattedFK.join(", ")}]`);
+        }
+
+        if (classRelation?.pathDeclaration) {
+            const module = await import(path.resolve(filePath));
+            const entityClass = module[cls.name];
+            const fromClass = getDecorators(entityClass);
+
+            for (let i = 0; i < relationSettings.refs.length && i < formattedFK.length; i++) {
+                for (const field of fromClass.fields) {
+                    if (field.name === relationSettings.refs[i]) {
+                        if (
+                            (relationSettings.relation === Relation.OneToOne ||
+                                relationSettings.relation === Relation.OneToMany) &&
+                            relationSettings.isRequired === true
+                        ) {
+                            relConstructor.newRowsTo.push(
+                                `${formattedFK[i]} ${field.type}? ${
+                                    formattedFK.length > 1 ? "" : " @unique"
+                                }`,
+                            );
+                        } else {
+                            relConstructor.newRowsTo.push(
+                                `${formattedFK[i]} ${field.type}${
+                                    formattedFK.length > 1 ? "" : " @unique"
+                                }`,
+                            );
+                        }
+                    }
+                }
             }
 
-            if (classRelation?.pathDeclaration) {
-                const module = await import(path.resolve(filePath));
-                const entityClass = module[cls.name];
-                const fromClass = getDecorators(entityClass);
-
-                if (formattedFK.length > 1) {
-                    for (let i = 0; i < relation.PK.length && i < formattedFK.length; i++) {
-                        for (const field of fromClass.fields) {
-                            if (field.name === relation.PK[i]) {
-                                newRowsTo.push(`${formattedFK[i]} ${field.type}`);
-                            }
-                        }
-                    }
-                    newRowsFrom.push(`@@unique([${relation.PK.join(", ")}])`);
-                    newRowsTo.push(`@@unique([${formattedFK.join(", ")}])`);
-                } else {
-                    for (let i = 0; i < relation.PK.length && i < formattedFK.length; i++) {
-                        for (const field of fromClass.fields) {
-                            if (field.name === relation.PK[i]) {
-                                newRowsTo.push(`${formattedFK[i]} ${field.type} @unique`);
-                            }
-                        }
-                    }
-                }
+            if (formattedFK.length > 1) {
+                relConstructor.newRowsFrom.push(`@@unique([${relationSettings.refs.join(", ")}])`);
+                relConstructor.newRowsTo.push(`@@unique([${formattedFK.join(", ")}])`);
             }
         }
     }
 
-    // Create PK(refereces) for relation (OneToOne, OneToManny, ManyToMany Explicit)
-    if (relation.relation !== Relation.ManyToMany) {
-        if (relation.PK) {
-            const formattedPK = relation.PK.join(", ");
-            relationStringTo.push(`references: [${formattedPK}]`);
+    // Create refereces for relation (OneToOne, OneToManny, ManyToMany Explicit)
+    if (relationSettings.relation !== Relation.ManyToMany) {
+        if (relationSettings.refs) {
+            const formattedPK = relationSettings.refs.join(", ");
+            relConstructor.relationStringTo.push(`references: [${formattedPK}]`);
         } else {
-            printError("You need to set PK for relation of type", `${relation.relation}`);
+            printError("You need to set refs for relation of type", `${relationSettings.relation}`);
             process.exit(1);
         }
     }
 
-    if (relation.map) {
-        relationStringTo.push(`map: "${relation.map}"`);
+    // Create onDelete for relation (OneToOne, OneToManny, ManyToMany Explicit)
+    if (relationSettings.onDelete) {
+        relConstructor.relationStringTo.push(`onDelete: ${relationSettings.onDelete}`);
     }
 
-    if (relation.onDelete) {
-        relationStringTo.push(`onDelete: ${relation.onDelete}`);
-    }
-
-    if (relation.onUpdate) {
-        relationStringTo.push(`onUpdate: ${relation.onUpdate}`);
+    // Create onUpdate for relation (OneToOne, OneToManny, ManyToMany Explicit)
+    if (relationSettings.onUpdate) {
+        relConstructor.relationStringTo.push(`onUpdate: ${relationSettings.onUpdate}`);
     }
 
     let relStringTo: string | undefined = undefined;
-    if (relation.relation !== Relation.ManyToMany) {
-        if (relationStringTo.length > 0) {
-            relStringTo = `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)} ${
-                fromClass.name
-            } @relation(${relationStringTo.join(", ")})`;
+    const relString = `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)} ${
+        fromClass.name
+    }`;
+
+    if (relationSettings.relation !== Relation.ManyToMany) {
+        if (
+            (relationSettings.relation === Relation.OneToMany ||
+                relationSettings.relation === Relation.OneToOne) &&
+            relationSettings.isRequired === true
+        ) {
+            relStringTo = `${relString}?`;
         } else {
-            relStringTo = `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)} ${
-                fromClass.name
-            }`;
+            relStringTo = relString;
         }
     } else {
-        if (relationStringTo.length > 0) {
-            relStringTo = `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)} ${
-                fromClass.name
-            }[] @relation(${relationStringTo.join(", ")})`;
-        } else {
-            relStringTo = `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)} ${
-                fromClass.name
-            }[]`;
-        }
+        relStringTo = `${relString}[]`;
+    }
+
+    if (relConstructor.relationStringTo.length > 0) {
+        relStringTo += ` @relation(${relConstructor.relationStringTo.join(", ")})`;
     }
 
     let relStringFrom: string | undefined = undefined;
-    if (relation.relation !== Relation.ManyToMany) {
-        if (relation.relation === Relation.OneToMany) {
-            if (relationStringFrom.length > 0) {
-                relStringFrom = `${relation.model[0].toLowerCase() + relation.model.slice(1)} ${
-                    relation.model
-                }[] @relation(${relationStringFrom.join(", ")})`;
-            } else {
-                relStringFrom = `${relation.model[0].toLowerCase() + relation.model.slice(1)} ${
-                    relation.model
-                }[]`;
-            }
-        } else {
-            if (relationStringFrom.length > 0) {
-                relStringFrom = `${relation.model[0].toLowerCase() + relation.model.slice(1)} ${
-                    relation.model
-                }? @relation(${relationStringFrom.join(", ")})`;
-            } else {
-                relStringFrom = `${relation.model[0].toLowerCase() + relation.model.slice(1)} ${
-                    relation.model
-                }?`;
-            }
-        }
+    const modelString = `${
+        relationSettings.model[0].toLowerCase() + relationSettings.model.slice(1)
+    } ${relationSettings.model}`;
+
+    if (relationSettings.relation === Relation.OneToMany) {
+        relStringFrom =
+            relConstructor.relationStringFrom.length > 0
+                ? `${modelString}[] @relation(${relConstructor.relationStringFrom.join(", ")})`
+                : `${modelString}[]`;
+    } else if (relationSettings.relation === Relation.ManyToManyExplicit && classRelation) {
+        const classRelName = classRelation?.name[0].toLowerCase() + classRelation?.name.slice(1);
+        relStringFrom =
+            relConstructor.relationStringFrom.length > 0
+                ? `${classRelName} ${
+                      relationSettings.model
+                  }[] @relation(${relConstructor.relationStringFrom.join(", ")})`
+                : `${classRelName} ${relationSettings.model}[]`;
     } else {
-        if (relationStringFrom.length > 0) {
-            relStringFrom = `${relation.model[0].toLowerCase() + relation.model.slice(1)} ${
-                relation.model
-            }[] @relation(${relationStringFrom.join(", ")})`;
-        } else {
-            relStringFrom = `${relation.model[0].toLowerCase() + relation.model.slice(1)} ${
-                relation.model
-            }[]`;
-        }
+        relStringFrom =
+            relConstructor.relationStringFrom.length > 0
+                ? `${modelString}? @relation(${relConstructor.relationStringFrom.join(", ")})`
+                : `${modelString}?`;
+    }
+
+    if (relationSettings.relation === Relation.ManyToMany) {
+        relStringFrom =
+            relConstructor.relationStringFrom.length > 0
+                ? `${modelString} @relation(${relConstructor.relationStringFrom.join(", ")})`
+                : modelString;
     }
 
     const relashionships: Relationships = {
         fromEntity: fromClass.name,
-        toEntity: relation.model,
+        toEntity: relationSettings.model,
         relationStringTo: relStringTo,
         relationStringFrom: relStringFrom,
-        newRowsTo,
-        newRowsFrom,
+        newRowsTo: relConstructor.newRowsTo,
+        newRowsFrom: relConstructor.newRowsFrom,
+        relationType: relationSettings.relation,
+        classRelation: classRelation,
     };
 
     return relashionships;
@@ -205,9 +234,8 @@ async function generatePrismaRelations(
     schemaPath: string,
     relations: Relationships[],
 ): Promise<void> {
-    let schemaContent = fs.readFileSync(schemaPath, "utf-8");
-
-    relations.forEach((relation) => {
+    relations.forEach(async (relation) => {
+        let schemaContent = fs.readFileSync(schemaPath, "utf-8");
         // Add new lines to the to entity
         const modelRegex = new RegExp(`(model\\s+${relation.toEntity}\\s+{[\\s\\S]*?})`, "g");
         const toEntity = schemaContent.match(modelRegex);
@@ -225,30 +253,49 @@ async function generatePrismaRelations(
         const fromEntity = schemaContent.match(modelRegex2);
         if (fromEntity) {
             if (relation.relationStringFrom) {
-                const fieldRegex = new RegExp(
-                    `(\\s+${relation.toEntity[0].toLowerCase() + relation.toEntity.slice(1)}\\s+${
-                        relation.toEntity
-                    })(.*)`,
-                );
-                const updatedSchemaContent = fromEntity[0].replace(
-                    fieldRegex,
-                    `\n${relation.relationStringFrom}`,
-                );
-
-                schemaContent = schemaContent.replace(fromEntity[0], updatedSchemaContent);
+                if (
+                    relation.relationType === Relation.ManyToManyExplicit &&
+                    relation.classRelation
+                ) {
+                    const fieldRegex = new RegExp(
+                        `(\\s+${
+                            relation.classRelation?.name[0].toLowerCase() +
+                            relation.classRelation?.name.slice(1)
+                        } ${relation.toEntity})(.*)`,
+                    );
+                    const updatedSchemaContent = fromEntity[0].replace(
+                        fieldRegex,
+                        `\n${relation.relationStringFrom}`,
+                    );
+                    schemaContent = schemaContent.replace(fromEntity[0], updatedSchemaContent);
+                } else {
+                    const fieldRegex = new RegExp(
+                        `(\\s+${
+                            relation.toEntity[0].toLowerCase() + relation.toEntity.slice(1)
+                        }\\s+${relation.toEntity})(.*)`,
+                    );
+                    const updatedSchemaContent = fromEntity[0].replace(
+                        fieldRegex,
+                        `\n${relation.relationStringFrom}`,
+                    );
+                    schemaContent = schemaContent.replace(fromEntity[0], updatedSchemaContent);
+                }
             }
 
             if (relation.newRowsFrom.length > 0) {
+                console.log(relation.newRowsFrom);
+                console.log(fromEntity[0]);
                 const newModel2 = fromEntity[0].replace(
                     "}",
                     `${relation.newRowsFrom.join("\n")}\n}`,
                 );
+
+                console.log(newModel2);
                 schemaContent = schemaContent.replace(fromEntity[0], newModel2);
             }
         }
+        await fs.promises.writeFile(schemaPath, schemaContent);
     });
-
-    await fs.promises.writeFile(schemaPath, schemaContent);
 }
 
 export { createRelationships, Relationships, generatePrismaRelations };
