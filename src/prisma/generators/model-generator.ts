@@ -14,6 +14,7 @@ import { ClassExtractor, ClassInfo } from "../reflect/extractor/class-extractor"
 import { FileInfo } from "../reflect/file-info";
 import { reflect } from "../reflect/reflect";
 import { Relationships, createRelationships, generatePrismaRelations } from "./relation-generator";
+import { removeModels } from "./model-remover";
 
 const RELATIONS: Relationships[] = [];
 
@@ -334,7 +335,7 @@ async function codeFirstGen(): Promise<void> {
         await readAllEntities(entitiesPath, schemaPath, entityNamePattern);
         await generatePrismaRelations(schemaPath, RELATIONS);
         await removeUnusedEnumsAndTypes(schemaPath);
-        //await removeModels();
+        await removeModels(entitiesPath, schemaPath, entityNamePattern);
     }
 
     // Prisma tasks
