@@ -75,7 +75,7 @@ async function createRelationships(
                 relationSettings.relation !== Relation.ManyToManyExplicit
             ) {
                 for (let i = 0; i < relationSettings.fields.length; i++) {
-                    formattedFK.push(`${relationSettings.fields[i]}Id`);
+                    formattedFK.push(`${relationSettings.fields[i]}`);
                 }
                 relationStringTo.push(`fields: [${formattedFK.join(", ")}]`);
             } else if (
@@ -98,7 +98,7 @@ async function createRelationships(
                 relationSettings.relation === Relation.ManyToManyExplicit
             ) {
                 for (let i = 0; i < relationSettings.refs.length; i++) {
-                    formattedFK.push(`${relationSettings.refs[i]}Id`);
+                    formattedFK.push(`${relationSettings.refs[i]}`);
                 }
                 relationStringTo.push(`fields: [${formattedFK.join(", ")}]`);
             } else if (
