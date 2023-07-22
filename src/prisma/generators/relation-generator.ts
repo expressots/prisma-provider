@@ -97,8 +97,8 @@ async function createRelationships(
                 relationSettings.fields &&
                 relationSettings.relation === Relation.ManyToManyExplicit
             ) {
-                for (let i = 0; i < relationSettings.refs.length; i++) {
-                    formattedFK.push(`${relationSettings.refs[i]}`);
+                for (let i = 0; i < relationSettings.fields.length; i++) {
+                    formattedFK.push(`${relationSettings.fields[i]}`);
                 }
                 relationStringTo.push(`fields: [${formattedFK.join(", ")}]`);
             } else if (
