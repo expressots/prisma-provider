@@ -131,7 +131,6 @@ async function createRelationships(
                         }
                     }
                     newRowsFrom.push(`@@unique([${relationSettings.refs.join(", ")}])`);
-                    console.log(newRowsFrom);
                     newRowsTo.push(`@@unique([${formattedFK.join(", ")}])`);
                 } else {
                     for (let i = 0; i < formattedFK.length; i++) {
