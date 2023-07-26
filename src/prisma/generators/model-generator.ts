@@ -18,7 +18,7 @@ import { removeModels } from "./model-remover";
 
 const RELATIONS: Relationships[] = [];
 
-type Decorator = {
+export type Decorator = {
     model: IPrismaModelOptions;
     fields: IPrismaFieldOptions[];
     indexes: IPrismaIndexOptions[];
