@@ -39,7 +39,7 @@ export interface IPrismaRelationOptions {
     /**
      * Related entity.
      */
-    model: string; // TODO: Change type to object.
+    model: string;
 
     /**
      * List of primary keys in the relation.
@@ -87,6 +87,7 @@ export function prismaRelation(options: IPrismaRelationOptions): PropertyDecorat
             "prisma:relations",
             target.constructor,
         ) as IPrismaRelationOptions[];
+
         const relation: IPrismaRelationOptions = {
             name: options.name || undefined,
             relation: options.relation,
