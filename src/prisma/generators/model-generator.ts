@@ -1,23 +1,24 @@
 import fs from "fs";
 import glob from "glob";
 import path from "path";
-import { reflect } from "../reflect/reflect";
-import { FileInfo } from "../reflect/file-info";
-import { ClassExtractor, ClassInfo } from "../reflect/extractor/class-extractor";
-import typeSearcher from "../../utils/type-search";
+import { printError, printReason } from "../../utils/better-error-message";
+import Compiler from "../../utils/compiler";
 import removeUnusedEnumsAndTypes from "../../utils/del-unused-enum-types";
 import { execProcess } from "../../utils/execute-process";
-import Compiler from "../../utils/compiler";
-import { printError, printReason } from "../../utils/better-error-message";
-import { IPrismaModelOptions } from "../decorators/prisma-model.decorator";
+import typeSearcher from "../../utils/type-search";
 import { IPrismaFieldOptions } from "../decorators/prisma-field.decorator";
 import { IPrismaIndexOptions } from "../decorators/prisma-index.decorator";
+import { IPrismaModelOptions } from "../decorators/prisma-model.decorator";
 import { IPrismaRelationOptions } from "../decorators/prisma-relation.decorator";
-import { Relationships, createRelationships, generatePrismaRelations } from "./relationship.helper";
+import { ClassExtractor, ClassInfo } from "../reflect/extractor/class-extractor";
+import { FileInfo } from "../reflect/file-info";
+import { reflect } from "../reflect/reflect";
+import { Relationships, createRelationships, generatePrismaRelations } from "./relation-generator";
+import { removeModels } from "./model-remover";
 
 const RELATIONS: Relationships[] = [];
 
-type Decorator = {
+export type Decorator = {
     model: IPrismaModelOptions;
     fields: IPrismaFieldOptions[];
     indexes: IPrismaIndexOptions[];
@@ -334,6 +335,7 @@ async function codeFirstGen(): Promise<void> {
         await readAllEntities(entitiesPath, schemaPath, entityNamePattern);
         await generatePrismaRelations(schemaPath, RELATIONS);
         await removeUnusedEnumsAndTypes(schemaPath);
+        await removeModels(entitiesPath, schemaPath, entityNamePattern);
     }
 
     // Prisma tasks
