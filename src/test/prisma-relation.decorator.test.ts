@@ -11,12 +11,12 @@ describe("PrismaRelation decorator", () => {
         const options: IPrismaRelationOptions = {
             name: "test_name",
             relation: Relation.OneToOne,
-            model: {},
-            PK: ["test_pk"],
-            FK: ["test_fk"],
+            model: "",
+            refs: ["test_pk"],
+            fields: ["test_fk"],
             onDelete: Action.Cascade,
             onUpdate: Action.SetDefault,
-            map: "test_map",
+            isRequired: true,
         };
 
         class TestClass {
@@ -37,8 +37,8 @@ describe("PrismaRelation decorator", () => {
     it("should handle missing options correctly", () => {
         const options: IPrismaRelationOptions = {
             relation: Relation.ManyToMany,
-            model: {},
-            PK: ["test_pk"],
+            model: "",
+            refs: ["test_pk"],
         };
 
         class TestClass {
@@ -60,6 +60,7 @@ describe("PrismaRelation decorator", () => {
             onDelete: undefined,
             onUpdate: undefined,
             map: undefined,
+            isRequired: false,
         });
     });
 });

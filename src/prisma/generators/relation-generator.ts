@@ -84,7 +84,7 @@ function AddRelationStringToOnRelation(
         }[]${relationStringTo}`;
     }
 
-    const isRequired = relationSettings.isRequired ? "?" : "";
+    const isRequired = relationSettings.isRequired ? "" : "?";
     return `${fromClass.name[0].toLowerCase() + fromClass.name.slice(1)} ${
         fromClass.name
     }${isRequired}${relationStringTo}`;
@@ -110,7 +110,7 @@ async function AddNewRowsOnRelation(
                         : false;
 
                 const newRowTo = `${relationsObject.formattedFields[i]} ${field.type}${
-                    isRequired ? "?" : ""
+                    isRequired ? "" : "?"
                 }${relationsObject.formattedFields.length > 1 ? "" : " @unique"}`;
 
                 relationsObject.newRowsTo.push(newRowTo);

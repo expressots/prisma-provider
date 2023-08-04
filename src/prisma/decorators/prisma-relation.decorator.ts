@@ -65,8 +65,8 @@ export interface IPrismaRelationOptions {
     onUpdate?: Action;
 
     /**
-     * Specifies if the relation is optional.
-     * @default true
+     * Specifies if the relation is required.
+     * @default false
      * @remarks
      * This option is only applicable for OneToOne and OneToMany relations.
      */

@@ -13,3 +13,6 @@ demo
 
 # Remove expressots config file
 expressots.config.ts
+
+# Remove coverage folder
+coverage
