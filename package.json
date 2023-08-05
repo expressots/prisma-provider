@@ -59,7 +59,8 @@
     "publish": "npm publish --access public",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --fix",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "test:coverage": "jest --coverage"
   },
   "devDependencies": {
     "@types/glob": "8.1.0",
@@ -83,6 +84,6 @@
     "reflect-metadata": "0.1.13"
   },
   "prisma": {
-    "schema": "./src/demo/orm/prisma/schema.prisma"
+    "schema": "./src/test/schema.prisma"
   }
 }
