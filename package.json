@@ -54,7 +54,7 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "build:esm": "tsc -p tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",
-    "dev": "tsnd --respawn src/main.ts",
+    "start:dev": "tsnd --respawn src/cli/cli.ts",
     "dry:run": "npm publish --dry-run",
     "publish": "npm publish --access public",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -81,7 +81,8 @@
     "@prisma/client": "4.16.1",
     "chalk": "4.1.2",
     "class-transformer": "0.5.1",
-    "reflect-metadata": "0.1.13"
+    "reflect-metadata": "0.1.13",
+    "yargs": "^17.7.2"
   },
   "prisma": {
     "schema": "./src/test/schema.prisma"
