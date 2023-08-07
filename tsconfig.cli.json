@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+	"compilerOptions": {
+    "moduleDetection": "force",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2017",
+    "lib": ["ES2017"],
+    "outDir": "bin",
+	},
+}

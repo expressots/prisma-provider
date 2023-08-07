@@ -6,7 +6,7 @@ export const enum Pattern {
 }
 
 export type Provider = {
-    Prisma: {
+    prisma: {
         schemaName: string;
         schemaPath: string;
         entitiesPath: string;

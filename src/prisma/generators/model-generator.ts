@@ -323,14 +323,14 @@ async function codeFirstGen(): Promise<void> {
     const { sourceRoot, providers, opinionated } = await Compiler.loadConfig();
     const PROJECT_ROOT = `${process.cwd()}\\${sourceRoot}`;
 
-    if (providers?.Prisma) {
+    if (providers?.prisma) {
         const schemaPath = path.join(
             PROJECT_ROOT,
-            providers?.Prisma.schemaPath,
-            providers.Prisma.schemaName,
+            providers?.prisma.schemaPath,
+            providers.prisma.schemaName,
         );
-        const entitiesPath = path.join(PROJECT_ROOT, providers.Prisma.entitiesPath);
-        const entityNamePattern = opinionated ? "entity" : providers.Prisma.entityNamePattern;
+        const entitiesPath = path.join(PROJECT_ROOT, providers.prisma.entitiesPath);
+        const entityNamePattern = opinionated ? "entity" : providers.prisma.entityNamePattern;
 
         await readAllEntities(entitiesPath, schemaPath, entityNamePattern);
         await generatePrismaRelations(schemaPath, RELATIONS);

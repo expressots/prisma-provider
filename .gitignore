@@ -16,3 +16,9 @@ expressots.config.ts
 
 # Remove coverage folder
 coverage
+
+# remove bin folder
+bin
+
+# remove lib folder
+lib

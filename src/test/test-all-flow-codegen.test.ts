@@ -8,7 +8,7 @@ const config: ExpressoConfig = {
     scaffoldPattern: Pattern.KEBAB_CASE,
     opinionated: true,
     providers: {
-        Prisma: {
+        prisma: {
             schemaName: "schema.prisma",
             schemaPath: "test",
             entitiesPath: "test/entities",
@@ -21,12 +21,12 @@ export default config;
 `;
 
     const schemaFileContent = `generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
-    
+
 datasource db {
-    provider = "postgres"
-    url      = "test"
+  provider = "postgres"
+  url      = "test"
 }
 `;
 
