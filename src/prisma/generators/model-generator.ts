@@ -325,10 +325,11 @@ async function codeFirstGen(): Promise<void> {
 
     if (providers?.prisma) {
         const schemaPath = path.join(
-            PROJECT_ROOT,
+            process.cwd(),
             providers?.prisma.schemaPath,
             providers.prisma.schemaName,
         );
+
         const entitiesPath = path.join(PROJECT_ROOT, providers.prisma.entitiesPath);
         const entityNamePattern = opinionated ? "entity" : providers.prisma.entityNamePattern;
 

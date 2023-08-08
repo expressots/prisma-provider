@@ -22,3 +22,9 @@ bin
 
 # remove lib folder
 lib
+
+# remove pack files
+*.tgz
+
+# remove prisma files
+*.prisma
