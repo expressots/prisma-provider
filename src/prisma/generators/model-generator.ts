@@ -327,7 +327,7 @@ async function codeFirstGen(): Promise<void> {
         const schemaPath = path.join(
             process.cwd(),
             providers?.prisma.schemaPath,
-            providers.prisma.schemaName,
+            `${providers.prisma.schemaName}.prisma`,
         );
 
         const entitiesPath = path.join(PROJECT_ROOT, providers.prisma.entitiesPath);
