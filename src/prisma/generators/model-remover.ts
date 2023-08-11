@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import glob from "glob";
+import { glob } from "glob";
 import { printError } from "../../utils/better-error-message";
 import { getDecorators } from "./model-generator";
 
