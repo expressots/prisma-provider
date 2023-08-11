@@ -298,21 +298,21 @@ async function readAllEntities(
             return;
         }
 
-        for (const match of classNameMatch) {
+        const promises = classNameMatch.map(async (match) => {
             const className = match[1];
             try {
                 const module = await import(path.resolve(file));
                 const entityClass = module[className];
 
-                if (!entityClass) {
-                    continue;
+                if (entityClass) {
+                    await generatePrismaModel(entityClass, file, schemaPath);
                 }
-
-                await generatePrismaModel(entityClass, file, schemaPath);
             } catch (err) {
                 printError("Error extracting entity module", `${err}`);
             }
-        }
+        });
+
+        await Promise.all(promises);
     });
 
     await Promise.all(generatePromises);

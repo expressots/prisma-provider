@@ -9,8 +9,8 @@ const config: ExpressoConfig = {
     opinionated: true,
     providers: {
         prisma: {
-            schemaName: "schema.prisma",
-            schemaPath: "test",
+            schemaName: "schema",
+            schemaPath: "src/test",
             entitiesPath: "test/entities",
             entityNamePattern: "entity",
         },

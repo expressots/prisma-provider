@@ -3,7 +3,7 @@
     "experimentalDecorators": true,                   
     "emitDecoratorMetadata": true,                    
     "rootDir": "./src",                               
-    "moduleResolution": "node",                       
+    "moduleResolution": "node",                  
     "allowJs": true,                                  
     "checkJs": true,                                  
     "declaration": true,                              
@@ -12,8 +12,8 @@
     "strict": true,                                      
     "skipLibCheck": true,
     "noImplicitAny": false,
-    "downlevelIteration": true                                
+    "downlevelIteration": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "src/test/**/*"]
+  "exclude": ["node_modules", "**/*.spec.ts", "src/test/**/*.test.ts"]
 }
