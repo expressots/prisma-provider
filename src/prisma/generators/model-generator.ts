@@ -1,5 +1,5 @@
 import fs from "fs";
-import glob from "glob";
+import { glob } from "glob";
 import path from "path";
 import { printError, printReason } from "../../utils/better-error-message";
 import Compiler from "../../utils/compiler";
@@ -275,7 +275,8 @@ async function readAllEntities(
     schemaPath: string,
     entityNamePattern: string,
 ): Promise<void> {
-    const files = glob.sync(`${entitiesPath}/**/*.${entityNamePattern}.ts`);
+    const filesPath = `**/*.${entityNamePattern}.ts`;
+    const files = glob.sync(filesPath, { cwd: `${process.cwd()}/${entitiesPath}` });
 
     if (!files || files.length === 0) {
         printError("No entity files found!", `Files: ${files ? files : "[]"}`);
@@ -289,7 +290,7 @@ async function readAllEntities(
     }
 
     const generatePromises = files.map(async (file) => {
-        const fileContent = fs.readFileSync(file, "utf-8");
+        const fileContent = fs.readFileSync(`${process.cwd()}/${entitiesPath}/${file}`, "utf-8");
         const classRegex = new RegExp("(?<!\\/\\/.*\\n)class\\s+(\\w+)", "g");
         const classNameMatch = [...fileContent.matchAll(classRegex)];
 
@@ -341,7 +342,7 @@ async function codeFirstGen(): Promise<void> {
             `${providers.prisma.schemaName}.prisma`,
         );
 
-        const entitiesPath = path.join(PROJECT_ROOT, providers.prisma.entitiesPath);
+        const entitiesPath = path.join(sourceRoot, providers.prisma.entitiesPath);
         const entityNamePattern = opinionated ? "entity" : providers.prisma.entityNamePattern;
 
         await readAllEntities(entitiesPath, schemaPath, entityNamePattern);

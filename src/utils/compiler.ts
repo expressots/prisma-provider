@@ -55,10 +55,9 @@ class Compiler {
     }
 
     private static async findConfig(dir: string): Promise<string> {
-        const configPath = path.join(dir, "expressots.config.ts");
-        const exists = existsSync(configPath);
+        const exists = existsSync(dir);
 
-        if (exists) return configPath;
+        if (exists) return dir;
 
         const parentDir = path.join(dir, "..");
 
@@ -70,14 +69,14 @@ class Compiler {
         return Compiler.findConfig(parentDir);
     }
 
-    static async loadConfig(): Promise<ExpressoConfig> {
+    static async loadConfig(
+        filePath: string = path.join(process.cwd(), "expressots.config.ts"),
+    ): Promise<ExpressoConfig> {
         const compiler: Service = await Compiler.Instance.getService();
 
         compiler.enabled(true);
 
-        globalConfigObject = Compiler.interopRequireDefault(
-            await Compiler.findConfig(process.cwd()),
-        );
+        globalConfigObject = Compiler.interopRequireDefault(await Compiler.findConfig(filePath));
 
         compiler.enabled(false);
 

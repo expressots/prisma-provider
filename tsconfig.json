@@ -12,6 +12,7 @@
     "strict": true,                                      
     "skipLibCheck": true,
     "noImplicitAny": false,
+    "types": ["reflect-metadata", "node"],
     "downlevelIteration": true
   },
   "include": ["src/**/*"],
