@@ -24,17 +24,28 @@ async function removePrismaModels(files: string[], schemaPath: string): Promise<
             for (const match of classNameMatch) {
                 const className = match[1];
                 try {
-                    const module = await import(path.resolve(file));
-                    const entityClass = module[className];
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    const tsNode = require("ts-node");
+                    // Load TypeScript configuration
+                    tsNode.register({
+                        transpileOnly: true, // Only transpile, don't type-check
+                        compilerOptions: {
+                            target: "ESNext", // Target version
+                            module: "CommonJS", // Output module format
+                        },
+                    });
 
-                    if (!entityClass) {
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    const { [className]: EntityClass } = require(path.resolve(file)); // Use the dynamic import
+
+                    if (!EntityClass) {
                         continue;
                     }
 
-                    const { model } = getDecorators(entityClass);
+                    const { model } = getDecorators(EntityClass);
 
                     if (model) {
-                        const modelString = `model ${entityClass.name}`;
+                        const modelString = `model ${EntityClass.name}`;
                         news.push(modelString);
                     }
                 } catch (err) {

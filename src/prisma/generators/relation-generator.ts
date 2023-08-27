@@ -176,8 +176,17 @@ async function createRelationships(
     filePath: string,
 ): Promise<Relationships | undefined> {
     const fromClass: ClassInfo | undefined = getClassInfo(cls, filePath);
-    const module = await import(path.resolve(filePath));
-    const entityClass = module[cls.name];
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const tsNode = require("ts-node");
+    tsNode.register({
+        transpileOnly: true, // Only transpile, don't type-check
+        compilerOptions: {
+            target: "ESNext", // Target version
+            module: "CommonJS", // Output module format
+        },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { [cls.name]: entityClass } = require(path.resolve(filePath)); // Use the dynamic import
     const fromClassDecorators = getDecorators(entityClass);
 
     if (!fromClass) {
