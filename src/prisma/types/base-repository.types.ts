@@ -2,16 +2,16 @@ import { PrismaClient } from "@prisma/client";
 
 export type CreateInput<Model extends ModelsOf<PrismaClient>> = Parameters<
     PrismaClient[Model]["create"]
->[0]["data"];
+>[0];
 
 export type DeleteWhere<Model extends ModelsOf<PrismaClient>> = Parameters<
     PrismaClient[Model]["delete"]
->[0]["where"];
+>[0];
 
 export type Select<
     Model extends ModelsOf<PrismaClient>,
     Method extends "create" | "delete",
-> = Parameters<PrismaClient[Model][Method]>[0]["select"];
+> = Parameters<PrismaClient[Model][Method]>[0];
 
 type PrismaClientMethod =
     | "aggregate"
