@@ -275,8 +275,7 @@ async function readAllEntities(
     schemaPath: string,
     entityNamePattern: string,
 ): Promise<void> {
-    const filesPath = `**/*.${entityNamePattern}.ts`;
-    const files = glob.sync(filesPath, { cwd: `${process.cwd()}/${entitiesPath}` });
+    const files = glob.sync(`${entitiesPath}/**/*.${entityNamePattern}.ts`);
 
     if (!files || files.length === 0) {
         printError("No entity files found!", `Files: ${files ? files : "[]"}`);
@@ -290,7 +289,7 @@ async function readAllEntities(
     }
 
     const generatePromises = files.map(async (file) => {
-        const fileContent = fs.readFileSync(`${process.cwd()}/${entitiesPath}/${file}`, "utf-8");
+        const fileContent = fs.readFileSync(file, "utf-8");
         const classRegex = new RegExp("(?<!\\/\\/.*\\n)class\\s+(\\w+)", "g");
         const classNameMatch = [...fileContent.matchAll(classRegex)];
 
