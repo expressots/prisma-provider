@@ -363,6 +363,13 @@ async function codeFirstGen(): Promise<void> {
         args: ["prisma", "validate"],
         directory: PROJECT_ROOT,
     });
+
+    // Review: this is the best solution?
+    await execProcess({
+        commandArg: "npx",
+        args: ["prisma", "generate"],
+        directory: PROJECT_ROOT,
+    });
 }
 
 export { codeFirstGen };
