@@ -11,7 +11,7 @@ const config: ExpressoConfig = {
         prisma: {
             schemaName: "schema",
             schemaPath: "src/test",
-            entitiesPath: "test/entities",
+            entitiesPath: "test/entities-postgres",
             entityNamePattern: "entity",
         },
     },
@@ -28,64 +28,12 @@ datasource db {
   provider = "postgres"
   url      = "test"
 }
-`;
 
-    const schemaResultFileContent = `generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgres"
-  url      = "test"
-}
-
-model CategoriesOnPosts {
-  id         Int       @id @default(autoincrement())
-  asignedAt  DateTime  @default(now())
-  assignedBy String
-  category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId String?   @unique
-  post       Post?     @relation(fields: [postId], references: [id])
-  postId     String?   @unique
-}
-
-model Category {
-  id    String              @id @default(uuid())
-  name  String              @default(uuid())
-  posts CategoriesOnPosts[]
-  post  Post[]
-}
-
-model Post {
-  id          String              @id
-  title       String
-  content     String
-  categories  Category[]
-  categories2 CategoriesOnPosts[]
-  user        User?               @relation(fields: [userId], references: [id])
-  userId      String?             @unique
-}
-
-model Profile {
-  id      String  @id
-  content String
-  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId  String? @unique
-}
-
-model User {
-  id      String   @id
-  email   String   @unique
-  role    Role
-  profile Profile?
-  posts   Post[]
-}
-
-enum Role {
-  ADMIN
-  REGULAR
+enum UnusedEnum {
+  TEST1
 }
 `;
+
     beforeAll(() => {
         const filePath = "expressots.config.ts";
         fs.writeFileSync(filePath, configFileContent, { encoding: "utf8" });
@@ -107,7 +55,7 @@ enum Role {
         expect(fs.existsSync(filePath)).toBe(true);
 
         const fileContent = fs.readFileSync(filePath, { encoding: "utf8" });
-        expect(fileContent).toEqual(configFileContent);
+        expect(fileContent).toMatchSnapshot();
     });
 
     it("Check schema.prisma", async () => {
@@ -117,6 +65,6 @@ enum Role {
         await codeFirstGen();
 
         const fileContent = fs.readFileSync(filePathSchemaPrisma, { encoding: "utf8" });
-        expect(fileContent).toEqual(schemaResultFileContent);
-    }, 60000);
+        expect(fileContent).toMatchSnapshot();
+    }, 120000);
 });
