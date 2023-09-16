@@ -1,4 +1,4 @@
-const enum type {
+enum type {
     String = "String",
     Boolean = "Boolean",
     Int = "Int",

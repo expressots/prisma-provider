@@ -332,7 +332,7 @@ async function readAllEntities(
 async function codeFirstGen(): Promise<void> {
     // Load expressots.config.json
     const { sourceRoot, providers, opinionated } = await Compiler.loadConfig();
-    const PROJECT_ROOT = `${process.cwd()}\\${sourceRoot}`;
+    const PROJECT_ROOT = process.cwd();
 
     if (providers?.prisma) {
         const schemaPath = path.join(

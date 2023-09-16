@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Create expressots.config.ts Check schema.prisma 1`] = `
+"generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = "test"
+}
+
+model CategoriesOnPosts {
+  id         Int       @id @default(autoincrement())
+  asignedAt  DateTime  @default(now())
+  assignedBy String
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?   @unique
+  post       Post?     @relation(fields: [postId], references: [id])
+  postId     String?   @unique
+}
+
+model Category {
+  id    String              @id @default(uuid())
+  name  String              @default(uuid())
+  posts CategoriesOnPosts[]
+  post  Post[]
+
+  @@index([name], name: "name")
+}
+
+model Post {
+  id          String              @id
+  title       String
+  content     String
+  categories  Category[]
+  categories2 CategoriesOnPosts[]
+  user        User?               @relation(fields: [userId], references: [id])
+  userId      String?             @unique
+}
+
+model Profile {
+  id      String  @id
+  content String
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId  String? @unique
+}
+
+model User {
+  id      String   @id
+  email   String   @unique
+  role    Role
+  profile Profile?
+  posts   Post[]
+}
+
+enum Role {
+  ADMIN
+  REGULAR
+}
+"
+`;
+
+exports[`Create expressots.config.ts should create expressots.config.ts file with the correct content 1`] = `
+"import { ExpressoConfig, Pattern } from "./src/@types/config";
+const config: ExpressoConfig = {
+    sourceRoot: "src",
+    scaffoldPattern: Pattern.KEBAB_CASE,
+    opinionated: true,
+    providers: {
+        prisma: {
+            schemaName: "schema",
+            schemaPath: "src/test",
+            entitiesPath: "test/entities-postgres",
+            entityNamePattern: "entity",
+        },
+    },
+};
+
+export default config;
+"
+`;

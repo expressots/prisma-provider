@@ -75,7 +75,7 @@ export class FileModule {
                     const declaration = declarations[0];
                     const sourceFileDirname = path.dirname(sourceFile.fileName);
                     const filePath = path.resolve(
-                        sourceFileDirname,
+                        //sourceFileDirname,
                         declaration.getSourceFile().fileName,
                     );
 
