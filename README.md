@@ -88,7 +88,7 @@ ExpressoTS is an independent open source project with ongoing development made p
 
 ## License
 
-Distributed under the MIT License. See [`LICENSE.txt`](https://github.com/expressots/expressots/blob/main/LICENSE) for more information.
+Distributed under the MIT License. See [`LICENSE.txt`](https://github.com/expressots/prisma-provider/blob/main/LICENSE) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
