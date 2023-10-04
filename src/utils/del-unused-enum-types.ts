@@ -1,8 +1,8 @@
 import * as fs from "fs";
 
 interface PrismaSchema {
-    enums: string[];
-    types: string[];
+    enums: Array<string>;
+    types: Array<string>;
 }
 
 export default async function removeUnusedEnumsAndTypes(filePath: string): Promise<void> {

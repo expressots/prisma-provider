@@ -13,19 +13,19 @@ type Relationships = {
     relationStringTo: string;
     relationStringFrom: string | undefined;
 
-    newRowsTo: string[];
-    newRowsFrom: string[];
+    newRowsTo: Array<string>;
+    newRowsFrom: Array<string>;
 
     relationType: Relation;
     classRelation: PropertyInfo | undefined;
 };
 
 type RelationsObject = {
-    relationStringTo: string[]; // store the relation string for the to entity
-    relationStringFrom: string[]; // store the relation of actual entity
-    newRowsTo: string[]; // store the new rows for the to entity
-    newRowsFrom: string[]; // store the new rows for the actual entity
-    formattedFields: string[];
+    relationStringTo: Array<string>; // store the relation string for the to entity
+    relationStringFrom: Array<string>; // store the relation of actual entity
+    newRowsTo: Array<string>; // store the new rows for the to entity
+    newRowsFrom: Array<string>; // store the new rows for the actual entity
+    formattedFields: Array<string>;
 };
 
 function addNamingOnRelation(
@@ -270,7 +270,7 @@ async function createRelationships(
 
 async function generatePrismaRelations(
     schemaPath: string,
-    relations: Relationships[],
+    relations: Array<Relationships>,
 ): Promise<void> {
     let schemaContent = fs.readFileSync(schemaPath, "utf-8");
     relations.forEach(async (relation) => {

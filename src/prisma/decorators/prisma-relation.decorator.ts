@@ -47,12 +47,12 @@ export interface IPrismaRelationOptions {
      * This option is required for relation types OneToOne, OneToMany,
      * and ManyToManyExplicit, but it will be ignored for the ManyToMany type if passed.
      */
-    refs?: string[] | undefined;
+    refs?: Array<string> | undefined;
 
     /**
      * List of foreign keys names given in the relation.
      */
-    fields?: string[];
+    fields?: Array<string>;
 
     /**
      * Behavior on delete.
@@ -86,7 +86,7 @@ export function prismaRelation(options: IPrismaRelationOptions): PropertyDecorat
         const relations = Reflect.getMetadata(
             "prisma:relations",
             target.constructor,
-        ) as IPrismaRelationOptions[];
+        ) as Array<IPrismaRelationOptions>;
 
         const relation: IPrismaRelationOptions = {
             name: options.name || undefined,

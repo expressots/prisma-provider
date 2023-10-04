@@ -14,14 +14,14 @@ function convertType(typeParam: string): string {
     }
 }
 
-function transformEnum(enumName: string, enumValues: string[]): string {
+function transformEnum(enumName: string, enumValues: Array<string>): string {
     const prismaEnumValues = enumValues.map((value) => value.toUpperCase()).join("\n  ");
     return `enum ${enumName} {
   ${prismaEnumValues}
 }`;
 }
 
-function transformType(typeName: string, typeFields: string[]): string {
+function transformType(typeName: string, typeFields: Array<string>): string {
     const prismaTypeFields = typeFields
         .map((field) => {
             const [fieldName, fieldType] = field.split(":").map((part) => part.trim());

@@ -2,7 +2,7 @@ import * as ts from "typescript";
 import * as path from "path";
 
 export type FileArray = {
-    fileArray: string[];
+    fileArray: Array<string>;
 };
 
 export type FileGlob = {
@@ -12,7 +12,7 @@ export type FileGlob = {
 export class FileModule {
     private static instance: FileModule;
 
-    sourceFiles!: string[];
+    sourceFiles!: Array<string>;
     program!: ts.Program;
     checker!: ts.TypeChecker;
 

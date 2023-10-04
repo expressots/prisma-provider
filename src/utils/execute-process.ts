@@ -7,7 +7,7 @@ async function execProcess({
     directory,
 }: {
     commandArg: string;
-    args: string[];
+    args: Array<string>;
     directory: string;
 }) {
     return new Promise((resolve, reject) => {

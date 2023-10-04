@@ -4,7 +4,7 @@ import { glob } from "glob";
 import { printError } from "../../utils/better-error-message";
 import { getDecorators } from "./model-generator";
 
-async function removePrismaModels(files: string[], schemaPath: string): Promise<void> {
+async function removePrismaModels(files: Array<string>, schemaPath: string): Promise<void> {
     try {
         if (!files.length) {
             console.error("Entity files not found");
@@ -14,7 +14,7 @@ async function removePrismaModels(files: string[], schemaPath: string): Promise<
         const schemaContent = fs.readFileSync(schemaPath, "utf-8");
         const modelRegex = /model [^}]* {[^}]*}/g;
         const models = Array.from(schemaContent.matchAll(modelRegex), (m) => m[0]);
-        const news: string[] = [];
+        const news: Array<string> = [];
 
         for (const file of files) {
             const fileContent = fs.readFileSync(file, "utf-8");
@@ -54,7 +54,7 @@ async function removePrismaModels(files: string[], schemaPath: string): Promise<
             }
         }
 
-        const inPrisma: string[] = models.map((model) => model.trim());
+        const inPrisma: Array<string> = models.map((model) => model.trim());
         const results = inPrisma.filter(
             (item) => !news.some((substring) => item.includes(substring)),
         );

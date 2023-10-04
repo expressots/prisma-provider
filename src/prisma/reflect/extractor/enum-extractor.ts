@@ -8,8 +8,8 @@ export type EnumInfo = {
 };
 
 export class EnumExtractor {
-    public static enums(fileInfo: FileInfo[]): EnumInfo[] {
-        const enums: EnumInfo[] = [];
+    public static enums(fileInfo: Array<FileInfo>): Array<EnumInfo> {
+        const enums: Array<EnumInfo> = [];
         fileInfo.forEach((file) => {
             file.enums.forEach((enm) => {
                 enums.push(enm);
@@ -19,7 +19,7 @@ export class EnumExtractor {
         return enums;
     }
 
-    public static byName(enums: EnumInfo[], enumName: string): EnumInfo | undefined {
+    public static byName(enums: Array<EnumInfo>, enumName: string): EnumInfo | undefined {
         return enums.find((enm) => enm.name === enumName);
     }
 }

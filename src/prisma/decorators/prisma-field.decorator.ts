@@ -18,7 +18,7 @@ export const Default = {
      * If the value is a string, it will be wrapped in quotes.
      * @param {any} value - the default value for the field
      */
-    Value: (value: any) => (typeof value === "string" ? `"${value}"` : value),
+    Value: (value: any): any => (typeof value === "string" ? `"${value}"` : value),
 };
 
 /**
@@ -48,7 +48,7 @@ export function prismaField(options: IPrismaFieldOptions = {}): PropertyDecorato
         const fields = Reflect.getMetadata(
             "prisma:fields",
             target.constructor,
-        ) as IPrismaFieldOptions[];
+        ) as Array<IPrismaFieldOptions>;
         const field: IPrismaFieldOptions = {
             name: options.name || propertyKey.toString(),
             type: options.type || type.String || Object || String,

@@ -16,33 +16,34 @@ import { reflect } from "../reflect/reflect";
 import { Relationships, createRelationships, generatePrismaRelations } from "./relation-generator";
 import { removeModels } from "./model-remover";
 
-const RELATIONS: Relationships[] = [];
+const RELATIONS: Array<Relationships> = [];
 
 export type Decorator = {
     model: IPrismaModelOptions;
-    fields: IPrismaFieldOptions[];
-    indexes: IPrismaIndexOptions[];
-    relations: IPrismaRelationOptions[];
+    fields: Array<IPrismaFieldOptions>;
+    indexes: Array<IPrismaIndexOptions>;
+    relations: Array<IPrismaRelationOptions>;
 };
 
 export function getDecorators(cls: any): Decorator {
     const modelDecorator =
         (Reflect.getMetadata("prisma:model", cls) as IPrismaModelOptions) || false;
     const fieldsDecorator =
-        (Reflect.getMetadata("prisma:fields", cls) as IPrismaFieldOptions[]) || [];
-    const indexOptions = (Reflect.getMetadata("prisma:index", cls) as IPrismaIndexOptions[]) || [];
+        (Reflect.getMetadata("prisma:fields", cls) as Array<IPrismaFieldOptions>) || [];
+    const indexOptions =
+        (Reflect.getMetadata("prisma:index", cls) as Array<IPrismaIndexOptions>) || [];
     const relationOptions =
-        (Reflect.getMetadata("prisma:relations", cls) as IPrismaRelationOptions[]) || [];
+        (Reflect.getMetadata("prisma:relations", cls) as Array<IPrismaRelationOptions>) || [];
 
     return {
-        model: modelDecorator,
+        model: modelDecorator as IPrismaModelOptions,
         fields: fieldsDecorator,
         indexes: indexOptions,
         relations: relationOptions,
     };
 }
 
-export function getFileInfo(filePath: string): FileInfo[] | undefined {
+export function getFileInfo(filePath: string): Array<FileInfo> | undefined {
     return reflect({ fileArray: [filePath] });
 }
 
@@ -70,8 +71,8 @@ export async function generatePrismaModel(
     const { model, fields, indexes, relations } = getDecorators(cls);
 
     if (model) {
-        const idFields: string[] = [];
-        const uniqueFields: string[] = [];
+        const idFields: Array<string> = [];
+        const uniqueFields: Array<string> = [];
 
         const fieldStrings = fields.map((field) => {
             const { name, type, attr, isId, isOptional, isUnique, prismaDefault, mapField } = field;

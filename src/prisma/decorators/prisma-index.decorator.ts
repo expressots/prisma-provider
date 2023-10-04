@@ -18,7 +18,7 @@ export interface IPrismaIndexOptions<T = any> {
     /**
      * Array of field names for the index.
      */
-    fields: string[];
+    fields: Array<string>;
 
     /**
      * Optional map name for the index.
@@ -50,7 +50,7 @@ export function prismaIndex<T = any>(
                 (Reflect.getMetadata(
                     "prisma:index",
                     target.constructor,
-                ) as IPrismaIndexOptions[]) || [];
+                ) as Array<IPrismaIndexOptions>) || [];
             const indexOption: IPrismaIndexOptions = {
                 fields: options.fields,
                 map: options.map,
@@ -65,7 +65,7 @@ export function prismaIndex<T = any>(
             }
 
             const indexOptions =
-                (Reflect.getMetadata("prisma:index", target) as IPrismaIndexOptions[]) || [];
+                (Reflect.getMetadata("prisma:index", target) as Array<IPrismaIndexOptions>) || [];
             const indexOption: IPrismaIndexOptions = {
                 fields: options.fields,
                 map: options.map,

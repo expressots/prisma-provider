@@ -2,11 +2,11 @@ import * as ts from "typescript";
 import { FileModule } from "./file-module";
 import { FileInfo, PropertyInfo } from "./file-info";
 
-export function processFile(fileModule: FileModule): FileInfo[] {
-    const filesParsed: string[] = fileModule.sourceFiles;
+export function processFile(fileModule: FileModule): Array<FileInfo> {
+    const filesParsed: Array<string> = fileModule.sourceFiles;
     const program: ts.Program = ts.createProgram(filesParsed, {});
     const checker: ts.TypeChecker = program.getTypeChecker();
-    const fileInfoArray: FileInfo[] = [];
+    const fileInfoArray: Array<FileInfo> = [];
 
     filesParsed.forEach((file) => {
         const fileInfo: FileInfo = {
@@ -66,7 +66,7 @@ export function processFile(fileModule: FileModule): FileInfo[] {
                 if (ts.isTypeAliasDeclaration(node)) {
                     const typeObject = checker.getTypeAtLocation(node.name!);
                     const typeName = checker.typeToString(typeObject);
-                    const typeProperties: PropertyInfo[] = [];
+                    const typeProperties: Array<PropertyInfo> = [];
 
                     fileModule.processProperty(
                         typeObject,
@@ -90,7 +90,7 @@ export function processFile(fileModule: FileModule): FileInfo[] {
                 if (ts.isClassDeclaration(node)) {
                     const classObject = checker.getTypeAtLocation(node.name!);
                     const className = checker.typeToString(classObject);
-                    const classProperties: PropertyInfo[] = [];
+                    const classProperties: Array<PropertyInfo> = [];
                     fileModule.processProperty(
                         classObject,
                         node,

@@ -1,4 +1,10 @@
-import { Default, prismaField, prismaIndex, prismaModel, prismaRelation } from "../../prisma/decorators";
+import {
+    Default,
+    prismaField,
+    prismaIndex,
+    prismaModel,
+    prismaRelation,
+} from "../../prisma/decorators";
 import { Relation } from "../../prisma/decorators/prisma-relation.decorator";
 import { CategoriesOnPosts } from "./categories-on-post.entity";
 
