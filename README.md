@@ -1,6 +1,7 @@
 <a name="readme-top"></a>
 
 <!-- PROJECT SHIELDS -->
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -15,19 +16,19 @@
     <img src="https://github.com/expressots/expressots/blob/main/media/expressots.png" alt="Logo" width="120">
   </a>
 
-  <h3 align="center">ExpressoTS Prisma Provider</h3>
+  <h3 align="center">ExpressoTS Framework</h3>
 
   <p align="center">
-    Everything you need to know to build applications with ExpressoTS and Prisma Provider
+    Everything you need to know to build applications with ExpressoTS
     <br />
     <a href="https://doc.expresso-ts.com/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/expressots/prisma-provider/discussions">Let's discuss</a>
+    <a href="https://github.com/expressots/expressots/discussions">Let's discuss</a>
     ·
-    <a href="https://github.com/expressots/prisma-provider/issues">Report Bug</a>
+    <a href="https://github.com/expressots/expressots/issues">Report Bug</a>
     ·
-    <a href="https://github.com/expressots/prisma-provider/issues">Request Feature</a>
+    <a href="https://github.com/expressots/expressots/issues">Request Feature</a>
   </p>
 </div>
 
@@ -44,16 +45,17 @@
 </details>
 
 <!-- ABOUT THE PROJECT -->
+
 # About The Project
 
-Work in progress . . .
+ExpressoTS is a [Typescript](https://www.typescriptlang.org/) + [Node.js](https://nodejs.org/en/) lightweight framework for quick building scalable, easy to read and maintain, server-side applications 🐎
 
 ## Getting Started
 
-- Here is our [Site](https://expresso-ts.com/)
-- You can find our [Documentation here](https://doc.expresso-ts.com/)
-- Checkout our [First Steps documentation](https://doc.expresso-ts.com/docs/overview/first-steps)
-- Our [CLI Documentation](https://doc.expresso-ts.com/docs/cli/overview)
+-   Here is our [Site](https://expresso-ts.com/)
+-   You can find our [Documentation here](https://doc.expresso-ts.com/)
+-   Checkout our [First Steps documentation](https://doc.expresso-ts.com/docs/overview/first-steps)
+-   Our [CLI Documentation](https://doc.expresso-ts.com/docs/cli/overview)
 
 ## Contributing
 
@@ -62,27 +64,27 @@ ExpressoTS is more than just a TypeScript framework; it's a collective effort by
 
 Why Contribute to Documentation?
 
-- **Share Knowledge**: If you've figured out something cool, why keep it to yourself?
-- **Build Your Portfolio**: Contributing to an open-source project like ExpressoTS is a great way to showcase your skills.
-- **Join a Network**: Get to know a community of like-minded developers.
-- **Improve the Product**: Help us fill in the gaps, correct errors, or make complex topics easier to understand.
+-   **Share Knowledge**: If you've figured out something cool, why keep it to yourself?
+-   **Build Your Portfolio**: Contributing to an open-source project like ExpressoTS is a great way to showcase your skills.
+-   **Join a Network**: Get to know a community of like-minded developers.
+-   **Improve the Product**: Help us fill in the gaps, correct errors, or make complex topics easier to understand.
 
 Ready to contribute?
 
-- [Contributing Guidelines](https://github.com/expressots/expresso-site-doc/blob/main/CONTRIBUTING.md)
-- [How to Contribute](https://github.com/expressots/expresso-site-doc/blob/main/CONTRIBUTING_HOWTO.md)
-- [Coding Guidelines](https://github.com/rsaz/TypescriptCodingGuidelines)
+-   [Contributing Guidelines](https://github.com/expressots/prisma-provider/blob/main/CONTRIBUTING.md)
+-   [How to Contribute](https://github.com/expressots/prisma-provider/blob/main/CONTRIBUTING_HOWTO.md)
+-   [Coding Guidelines](https://github.com/rsaz/TypescriptCodingGuidelines)
 
 ## Support the project
 
 ExpressoTS is an independent open source project with ongoing development made possible thanks to your support. If you'd like to help, please consider:
 
-- Become a **[sponsor on GitHub](https://github.com/sponsors/expressots)**
-- Follow the **[organization](https://github.com/expressots)** on GitHub and Star ⭐ the project
-- Subscribe to the Twitch channel: **[Richard Zampieri](https://www.twitch.tv/richardzampieri)**
-- Join our **[Discord](https://discord.com/invite/PyPJfGK)**
-- Contribute submitting **[issues and pull requests](https://github.com/expressots/expressots/issues)**
-- Share the project with your friends and colleagues
+-   Become a **[sponsor on GitHub](https://github.com/sponsors/expressots)**
+-   Follow the **[organization](https://github.com/expressots)** on GitHub and Star ⭐ the project
+-   Subscribe to the Twitch channel: **[Richard Zampieri](https://www.twitch.tv/richardzampieri)**
+-   Join our **[Discord](https://discord.com/invite/PyPJfGK)**
+-   Contribute submitting **[issues and pull requests](https://github.com/expressots/expressots/issues)**
+-   Share the project with your friends and colleagues
 
 ## License
 
@@ -92,12 +94,13 @@ Distributed under the MIT License. See [`LICENSE.txt`](https://github.com/expres
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/expressots/prisma-provider?style=for-the-badge
 [contributors-url]: https://github.com/expressots/prisma-provider/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/expressots/prisma-provider?style=for-the-badge
 [forks-url]: https://github.com/expressots/prisma-provider/forks
 [stars-shield]: https://img.shields.io/github/stars/expressots/prisma-provider?style=for-the-badge
-[stars-url]: https://github.com/expressots/expressots/stargazers
+[stars-url]: https://github.com/expressots/prisma-provider/stargazers
 [issues-shield]: https://img.shields.io/github/issues/expressots/prisma-provider?style=for-the-badge
 [issues-url]: https://github.com/expressots/prisma-provider/issues
 [license-shield]: https://img.shields.io/github/license/expressots/prisma-provider?style=for-the-badge
