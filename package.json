@@ -66,7 +66,6 @@
     },
     "dependencies": {
         "chalk": "4.1.2",
-        "class-transformer": "0.5.1",
         "glob": "^10.3.10",
         "reflect-metadata": "0.1.13",
         "yargs": "17.7.2"
