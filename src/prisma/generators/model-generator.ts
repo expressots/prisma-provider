@@ -342,7 +342,10 @@ async function codeFirstGen(): Promise<void> {
             `${providers.prisma.schemaName}.prisma`,
         );
 
-        const entitiesPath = path.join(sourceRoot, providers.prisma.entitiesPath);
+        const entitiesPath = path
+            .join(sourceRoot, providers.prisma.entitiesPath)
+            .replace(/\\/g, "/");
+
         const entityNamePattern = opinionated ? "entity" : providers.prisma.entityNamePattern;
 
         await readAllEntities(entitiesPath, schemaPath, entityNamePattern);
