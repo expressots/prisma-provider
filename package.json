@@ -58,7 +58,6 @@
         "build:cli": "tsc -p tsconfig.cli.json && chmod +x ./bin/cli/cli.js",
         "dev": "tsnd --respawn src/cli/cli.ts",
         "dry:run": "npm publish --dry-run",
-        "publish": "npm publish --access public",
         "format": "prettier --write \"src/**/*.ts\"",
         "lint:fix": "eslint \"src/**/*.ts\" --fix",
         "test": "jest --verbose --detectOpenHandles",
