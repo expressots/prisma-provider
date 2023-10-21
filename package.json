@@ -61,7 +61,8 @@
         "format": "prettier --write \"src/**/*.ts\"",
         "lint:fix": "eslint \"src/**/*.ts\" --fix",
         "test": "jest --verbose --detectOpenHandles",
-        "test:coverage": "jest --coverage --detectOpenHandles"
+        "test:coverage": "jest --coverage --detectOpenHandles",
+        "release": "release-it"
     },
     "dependencies": {
         "chalk": "4.1.2",
@@ -73,6 +74,7 @@
         "@commitlint/cli": "^17.7.2",
         "@commitlint/config-conventional": "^17.7.0",
         "@prisma/client": "5.4.1",
+        "@release-it/conventional-changelog": "^7.0.2",
         "@types/glob": "8.1.0",
         "@types/jest": "^29.5.5",
         "@typescript-eslint/eslint-plugin": "5.62.0",
@@ -84,6 +86,7 @@
         "lint-staged": "^14.0.1",
         "prettier": "3.0.3",
         "prisma": "5.4.1",
+        "release-it": "^16.2.1",
         "ts-jest": "^29.1.1",
         "ts-node-dev": "2.0.0",
         "typescript": "5.1.6"
