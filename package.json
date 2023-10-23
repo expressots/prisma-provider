@@ -71,7 +71,7 @@
         "yargs": "17.7.2"
     },
     "devDependencies": {
-        "@commitlint/cli": "^17.7.2",
+        "@commitlint/cli": "^18.0.0",
         "@commitlint/config-conventional": "^17.7.0",
         "@prisma/client": "5.4.1",
         "@release-it/conventional-changelog": "^7.0.2",
