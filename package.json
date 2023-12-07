@@ -73,7 +73,7 @@
     "devDependencies": {
         "@commitlint/cli": "^17.7.2",
         "@commitlint/config-conventional": "^17.7.0",
-        "@prisma/client": "5.4.1",
+        "@prisma/client": "5.7.0",
         "@release-it/conventional-changelog": "^7.0.2",
         "@types/glob": "8.1.0",
         "@types/jest": "^29.5.5",
